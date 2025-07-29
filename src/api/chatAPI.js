@@ -1,6 +1,6 @@
 // Chat API service for handling all chat-related API calls
 
-const API_BASE_URL = 'http://localhost:8000'; // Update this to your backend URL
+const API_BASE_URL = 'http://127.0.0.1:8000'; // Update this to your backend URL
 
 /**
  * Fetch chat response from the backend
@@ -9,7 +9,7 @@ const API_BASE_URL = 'http://localhost:8000'; // Update this to your backend URL
  */
 export const fetchChatResponse = async (requestPayload) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/chat`, {
+        const response = await fetch(`${API_BASE_URL}/nexusai/conversation/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

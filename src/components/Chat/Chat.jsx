@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Chat.css';
+import { fetchChatResponse } from '../../api/chatAPI';
 
 
 
@@ -36,11 +37,9 @@ const Chat = () => {
         setError('');
 
         const requestPayload = {
-            request: {
-                index: 'my_index',
-                query: currentQuery,
-                history: history
-            }
+            index: 'veera',
+            query: currentQuery,
+            history: history
         };
 
         try {
@@ -50,16 +49,26 @@ const Chat = () => {
                 content: aiResponse,
                 timestamp: new Date().toISOString()
             }]);
-            setHistory(prev => [...prev, { human: currentQuery, ai: aiResponse }]);
+
+            // Update history with max 5 objects limit
+            setHistory(prev => {
+                const newHistoryItem = { human: currentQuery, ai: aiResponse };
+                const updatedHistory = [...prev, newHistoryItem];
+
+                // If history exceeds 5 items, remove the oldest one
+                if (updatedHistory.length > 5) {
+                    return updatedHistory.slice(-5); // Keep only the last 5 items
+                }
+
+                return updatedHistory;
+            });
         } catch (error) {
             console.error('Error fetching AI response:', error);
             setError('Failed to get AI response. Please try again.');
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleKeyPress = (e) => {
+    }; const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
