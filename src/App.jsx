@@ -1,8 +1,19 @@
 import React from 'react';
-import Chat from './components/Chat/Chat';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import RegularChatPage from './pages/RegularChatPage';
+import ImprovedChatPage from './pages/ImprovedChatPage';
+import './App.css';
 
 const App = () => {
-  return <Chat />;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/regular" element={<RegularChatPage />} />
+        <Route path="/improved" element={<ImprovedChatPage />} />
+        <Route path="/" element={<Navigate to="/improved" replace />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;

@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Chat.css';
+import ChatHeader from '../ChatHeader/ChatHeader';
 import { fetchChatResponse } from '../../api/chatAPI';
-
-
 
 const Chat = () => {
     const [history, setHistory] = useState([]);
@@ -10,9 +9,13 @@ const Chat = () => {
     const [chatLog, setChatLog] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [sessionStats, setSessionStats] = useState({
+        messagesCount: 0,
+        session: 'veera1234',
+        index: 'veera'
+    });
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
-
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,7 +24,6 @@ const Chat = () => {
     useEffect(() => {
         scrollToBottom();
     }, [chatLog, loading]);
-
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -37,38 +39,39 @@ const Chat = () => {
         setError('');
 
         const requestPayload = {
-            index: 'veera',
-            query: currentQuery,
-            history: history
+            "index": "veera",
+            "query": currentQuery,
+            "history": []
         };
+
+        console.log('Chat component sending payload:', requestPayload);
+        console.log('History state:', history);
+        console.log('Stringified payload:', JSON.stringify(requestPayload));
 
         try {
             const aiResponse = await fetchChatResponse(requestPayload);
+
             setChatLog(prev => [...prev, {
                 role: 'ai',
-                content: aiResponse,
+                content: aiResponse || 'No response received',
                 timestamp: new Date().toISOString()
             }]);
 
-            // Update history with max 5 objects limit
-            setHistory(prev => {
-                const newHistoryItem = { human: currentQuery, ai: aiResponse };
-                const updatedHistory = [...prev, newHistoryItem];
+            setHistory(prev => [...prev, { role: 'user', content: currentQuery }, { role: 'ai', content: aiResponse }]);
+            setSessionStats(prev => ({
+                ...prev,
+                messagesCount: prev.messagesCount + 1
+            }));
 
-                // If history exceeds 5 items, remove the oldest one
-                if (updatedHistory.length > 5) {
-                    return updatedHistory.slice(-5); // Keep only the last 5 items
-                }
-
-                return updatedHistory;
-            });
         } catch (error) {
             console.error('Error fetching AI response:', error);
             setError('Failed to get AI response. Please try again.');
         } finally {
             setLoading(false);
         }
-    }; const handleKeyPress = (e) => {
+    };
+
+    const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
@@ -78,6 +81,7 @@ const Chat = () => {
     const clearChat = () => {
         setChatLog([]);
         setHistory([]);
+        setSessionStats(prev => ({ ...prev, messagesCount: 0 }));
         setError('');
     };
 
@@ -90,35 +94,28 @@ const Chat = () => {
 
     return (
         <div className="chat-container">
-            {/* Header */}
-            <div className="chat-header">
-                <div className="header-content">
-                    <h1>🤖 AI Assistant</h1>
-                    <p>Powered by Advanced AI</p>
-                </div>
-                {chatLog.length > 0 && (
-                    <button className="clear-chat-btn" onClick={clearChat}>
-                        🗑️ Clear
-                    </button>
-                )}
-            </div>
+            <ChatHeader
+                chatType="regular"
+                sessionStats={sessionStats}
+                onClearChat={clearChat}
+                showClearButton={chatLog.length > 0}
+            />
 
-            {/* Messages Container */}
             <div className="chat-messages">
                 {chatLog.length === 0 && !loading && (
                     <div className="welcome-screen">
                         <div className="welcome-icon">💬</div>
-                        <h2>Welcome to AI Chat</h2>
-                        <p>Start a conversation with our AI assistant. Ask anything!</p>
+                        <h2>AI Chat Assistant</h2>
+                        <p>Ask me anything! I'm here to help you with information, questions, and conversations.</p>
                         <div className="example-prompts">
-                            <div className="prompt-card" onClick={() => setUserInput("What can you help me with?")}>
-                                "What can you help me with?"
+                            <div className="prompt-card" onClick={() => setUserInput("Tell me about artificial intelligence")}>
+                                "Tell me about artificial intelligence"
                             </div>
-                            <div className="prompt-card" onClick={() => setUserInput("Explain quantum computing")}>
-                                "Explain quantum computing"
+                            <div className="prompt-card" onClick={() => setUserInput("How can you help me today?")}>
+                                "How can you help me today?"
                             </div>
-                            <div className="prompt-card" onClick={() => setUserInput("Write a creative story")}>
-                                "Write a creative story"
+                            <div className="prompt-card" onClick={() => setUserInput("What are your capabilities?")}>
+                                "What are your capabilities?"
                             </div>
                         </div>
                     </div>
@@ -126,13 +123,6 @@ const Chat = () => {
 
                 {chatLog.map((msg, idx) => (
                     <div key={idx} className={`message-wrapper ${msg.role}`}>
-                        <div className="message-avatar">
-                            {msg.role === 'user' ? (
-                                <div className="user-avatar">👤</div>
-                            ) : (
-                                <div className="ai-avatar">🤖</div>
-                            )}
-                        </div>
                         <div className="message-content">
                             <div className="message-header">
                                 <span className="sender-name">
@@ -151,15 +141,12 @@ const Chat = () => {
 
                 {loading && (
                     <div className="message-wrapper ai">
-                        <div className="message-avatar">
-                            <div className="ai-avatar loading">🤖</div>
-                        </div>
                         <div className="message-content">
                             <div className="message-header">
                                 <span className="sender-name">AI Assistant</span>
                             </div>
                             <div className="typing-indicator">
-                                <span>AI is thinking</span>
+                                <span>AI is thinking...</span>
                                 <div className="typing-dots">
                                     <span></span>
                                     <span></span>
@@ -179,7 +166,6 @@ const Chat = () => {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Container */}
             <div className="chat-input">
                 <div className="input-wrapper">
                     <textarea
@@ -187,7 +173,7 @@ const Chat = () => {
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
                         onKeyDown={handleKeyPress}
-                        placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)"
+                        placeholder="Type your message here..."
                         rows={1}
                         disabled={loading}
                     />
@@ -196,7 +182,7 @@ const Chat = () => {
                         disabled={loading || !userInput.trim()}
                         className="send-button"
                     >
-                        {loading ? '⏳' : '🚀'}
+                        {loading ? '⏳' : '📤'}
                     </button>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 // Chat API service for handling all chat-related API calls
-
+//https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net'; // Update this to your backend URL
 
 /**
@@ -9,6 +9,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python
  */
 export const fetchChatResponse = async (requestPayload) => {
     try {
+        console.log('Sending request payload:', requestPayload);
+        console.log('API URL:', `${API_BASE_URL}/nexusai/conversation/chat`);
+
         const response = await fetch(`${API_BASE_URL}/nexusai/conversation/chat`, {
             method: 'POST',
             headers: {
@@ -17,12 +20,18 @@ export const fetchChatResponse = async (requestPayload) => {
             body: JSON.stringify(requestPayload),
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
         if (!response.ok) {
+            const errorText = await response.text();
+            console.log('Error response body:', errorText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        return data.response || data.message || 'No response received';
+
+        return data.response || data.message || data.answer || data.reply || data.content || 'No response received';
     } catch (error) {
         console.error('Error fetching chat response:', error);
         throw new Error('Failed to get AI response. Please try again.');
