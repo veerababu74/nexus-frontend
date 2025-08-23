@@ -1,7 +1,7 @@
 // Chat API service for handling all chat-related API calls
 //https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net'; // Update this to your backend URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'; // Update this to your backend URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net'; // Update this to your backend URL
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'; // Update this to your backend URL
 
 /**
  * Fetch chat response from the backend

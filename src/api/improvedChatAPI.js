@@ -1,5 +1,5 @@
 // Improved Chat API service for enhanced chat functionality
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
 
 /**
  * Fetch improved chat response from the backend
