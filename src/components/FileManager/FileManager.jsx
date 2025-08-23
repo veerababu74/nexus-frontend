@@ -18,12 +18,12 @@ const FileManager = () => {
                 const res = await getAllKnowledgeRecords();
                 if (res?.success && Array.isArray(res.response)) {
                     const mappedFiles = res.response.map(doc => ({
-                        Title: doc.FileName.split('.')[0],
-                        FileName: doc.FileName,
-                        Hyperlink: doc.BlobUrl,
-                        Tags: doc.Tags ? doc.Tags.split(',') : [],
-                        FileUniqueId: doc.FileUniqueId,
-                        CreatedOn: doc.CreatedDate,
+                        Title: doc.FileName ? doc.FileName.split('.')[0] : 'Untitled',
+                        FileName: doc.FileName || 'Unknown',
+                        Hyperlink: doc.BlobUrl || '#',
+                        Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : [],
+                        FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
+                        CreatedOn: doc.CreatedDate || new Date().toISOString(),
                     }));
                     setFiles(mappedFiles);
                 } else {
@@ -46,11 +46,11 @@ const FileManager = () => {
                 if (res?.res?.knowledge_api?.success) {
                     const doc = res.res.knowledge_api.response;
                     const newFile = {
-                        Title: doc.FileName.split('.')[0],
-                        FileName: doc.FileName,
-                        Hyperlink: doc.BlobUrl,
-                        Tags: doc.Tags ? doc.Tags.split(',') : ['uploaded'],
-                        FileUniqueId: doc.FileUniqueId,
+                        Title: doc.FileName ? doc.FileName.split('.')[0] : file.name.split('.')[0],
+                        FileName: doc.FileName || file.name,
+                        Hyperlink: doc.BlobUrl || '#',
+                        Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : ['uploaded'],
+                        FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
                         CreatedOn: new Date().toISOString(),
                     };
                     setFiles(prev => [newFile, ...prev]);
@@ -106,13 +106,18 @@ const FileManager = () => {
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        if (!dateString) return 'N/A';
+        try {
+            return new Date(dateString).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return 'Invalid Date';
+        }
     };
 
     const getFileIcon = (fileName) => {
@@ -143,13 +148,22 @@ const FileManager = () => {
     });
 
     const sortedFiles = [...filteredFiles].sort((a, b) => {
-        const aVal = a[sortBy];
-        const bVal = b[sortBy];
+        const aVal = a[sortBy] || '';
+        const bVal = b[sortBy] || '';
+
+        // Handle undefined/null values
+        if (!aVal && !bVal) return 0;
+        if (!aVal) return 1;
+        if (!bVal) return -1;
+
+        // Convert to strings to ensure localeCompare works
+        const aStr = String(aVal);
+        const bStr = String(bVal);
 
         if (sortOrder === 'desc') {
-            return bVal.localeCompare(aVal);
+            return bStr.localeCompare(aStr);
         }
-        return aVal.localeCompare(bVal);
+        return aStr.localeCompare(bStr);
     });
 
     const handleTagToggle = (tag) => {
