@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
+import { uploadDocument, deleteDocument, getAllKnowledgeRecords } from '../../api/documentAPI';
 import './FileManager.css';
+
 
 const FileManager = () => {
     const [files, setFiles] = useState([]);
@@ -10,111 +12,65 @@ const FileManager = () => {
     const [sortOrder, setSortOrder] = useState('desc');
     const fileInputRef = useRef(null);
 
-    // Mock data for demonstration
-    const mockData = [
-        {
-            "Title": "Q1 Financial Summary",
-            "FileName": "Report_Q1.pdf",
-            "Hyperlink": "https://example.com/files/Report_Q1.pdf",
-            "Tags": ["finance", "q1", "report"],
-            "FileUniqueId": "a1b2c3d4-e5f6-7890-ab12-cd34ef567890",
-            "CreatedOn": "2025-01-15T10:30:00Z"
-        },
-        {
-            "Title": "Weekly Team Meeting Notes",
-            "FileName": "Team_Meeting_Notes.docx",
-            "Hyperlink": "https://example.com/files/Team_Meeting_Notes.docx",
-            "Tags": ["meeting", "team", "notes"],
-            "FileUniqueId": "b2c3d4e5-f678-9012-ab34-cd56ef789012",
-            "CreatedOn": "2025-01-22T14:00:00Z"
-        },
-        {
-            "Title": "2025 Marketing Strategy",
-            "FileName": "Marketing_Strategy.pptx",
-            "Hyperlink": "https://example.com/files/Marketing_Strategy.pptx",
-            "Tags": ["marketing", "strategy", "plan"],
-            "FileUniqueId": "c3d4e5f6-7890-1234-ab56-cd78ef901234",
-            "CreatedOn": "2025-02-01T09:15:00Z"
-        },
-        {
-            "Title": "Product Design Specifications",
-            "FileName": "Product_Design_Specs.pdf",
-            "Hyperlink": "https://example.com/files/Product_Design_Specs.pdf",
-            "Tags": ["product", "design", "specs"],
-            "FileUniqueId": "d4e5f678-9012-3456-ab78-cd90ef123456",
-            "CreatedOn": "2025-02-05T16:45:00Z"
-        },
-        {
-            "Title": "HR Policy Guidelines",
-            "FileName": "HR_Policies.docx",
-            "Hyperlink": "https://example.com/files/HR_Policies.docx",
-            "Tags": ["hr", "policies", "compliance"],
-            "FileUniqueId": "e5f67890-1234-5678-ab90-cd12ef345678",
-            "CreatedOn": "2025-02-10T11:20:00Z"
-        },
-        {
-            "Title": "Customer Feedback Insights",
-            "FileName": "Customer_Feedback.xlsx",
-            "Hyperlink": "https://example.com/files/Customer_Feedback.xlsx",
-            "Tags": ["customer", "feedback", "survey"],
-            "FileUniqueId": "f6789012-3456-7890-ab12-cd34ef567890",
-            "CreatedOn": "2025-02-15T13:10:00Z"
-        },
-        {
-            "Title": "Annual Performance Report 2024",
-            "FileName": "Annual_Report_2024.pdf",
-            "Hyperlink": "https://example.com/files/Annual_Report_2024.pdf",
-            "Tags": ["annual", "report", "performance"],
-            "FileUniqueId": "01234567-89ab-cdef-0123-456789abcdef",
-            "CreatedOn": "2025-02-20T08:55:00Z"
-        },
-        {
-            "Title": "Employee Training Material",
-            "FileName": "Training_Material.pptx",
-            "Hyperlink": "https://example.com/files/Training_Material.pptx",
-            "Tags": ["training", "employee", "learning"],
-            "FileUniqueId": "12345678-9abc-def0-1234-56789abcdef0",
-            "CreatedOn": "2025-02-25T15:30:00Z"
-        },
-        {
-            "Title": "Project Timeline Overview",
-            "FileName": "Project_Timeline.xlsx",
-            "Hyperlink": "https://example.com/files/Project_Timeline.xlsx",
-            "Tags": ["project", "timeline", "planning"],
-            "FileUniqueId": "23456789-abcd-ef01-2345-6789abcdef01",
-            "CreatedOn": "2025-03-01T12:40:00Z"
-        },
-        {
-            "Title": "Legal Agreement Draft",
-            "FileName": "Legal_Agreement.pdf",
-            "Hyperlink": "https://example.com/files/Legal_Agreement.pdf",
-            "Tags": ["legal", "agreement", "contract"],
-            "FileUniqueId": "3456789a-bcde-f012-3456-789abcdef012",
-            "CreatedOn": "2025-03-05T17:05:00Z"
-        }
-    ];
-
     React.useEffect(() => {
-        setFiles(mockData);
+        const fetchFiles = async () => {
+            const res = await getAllKnowledgeRecords();
+            if (res?.success && Array.isArray(res.response)) {
+                const mappedFiles = res.response.map(doc => ({
+                    Title: doc.FileName.split('.')[0],
+                    FileName: doc.FileName,
+                    Hyperlink: doc.BlobUrl,
+                    Tags: doc.Tags ? doc.Tags.split(',') : [],
+                    FileUniqueId: doc.FileUniqueId,
+                    CreatedOn: doc.CreatedDate,
+                }));
+                setFiles(mappedFiles);
+            }
+        };
+        fetchFiles();
     }, []);
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = async (event) => {
         const selectedFiles = Array.from(event.target.files);
+        for (const file of selectedFiles) {
+            const index_name = 'my_index'; // You may want to make this dynamic
+            const tag = undefined;
+            try {
+                const res = await uploadDocument({ file, index_name, tag });
+                if (res?.res?.knowledge_api?.success) {
+                    const doc = res.res.knowledge_api.response;
+                    const newFile = {
+                        Title: doc.FileName.split('.')[0],
+                        FileName: doc.FileName,
+                        Hyperlink: doc.BlobUrl,
+                        Tags: doc.Tags ? doc.Tags.split(',') : ['uploaded'],
+                        FileUniqueId: doc.FileUniqueId,
+                        CreatedOn: new Date().toISOString(),
+                    };
+                    setFiles(prev => [newFile, ...prev]);
+                    setUploadedFiles(prev => [...prev, newFile]);
+                } else {
+                    alert(res?.detail || 'Upload failed');
+                }
+            } catch (err) {
+                alert('Upload error');
+            }
+        }
+    };
 
-        selectedFiles.forEach(file => {
-            const newFile = {
-                Title: file.name.split('.')[0],
-                FileName: file.name,
-                Hyperlink: URL.createObjectURL(file),
-                Tags: [getFileType(file.name), "uploaded"],
-                FileUniqueId: generateUniqueId(),
-                CreatedOn: new Date().toISOString(),
-                file: file
-            };
-
-            setFiles(prev => [newFile, ...prev]);
-            setUploadedFiles(prev => [...prev, newFile]);
-        });
+    const handleDelete = async (fileUniqueId) => {
+        const index_name = 'my_index'; // You may want to make this dynamic
+        try {
+            const res = await deleteDocument({ index_name, file_unique_id: fileUniqueId });
+            if (res?.status === 'Success') {
+                setFiles(prev => prev.filter(f => f.FileUniqueId !== fileUniqueId));
+                alert('File deleted successfully');
+            } else {
+                alert(res?.detail || 'Delete failed');
+            }
+        } catch (err) {
+            alert('Delete error');
+        }
     };
 
     const getFileType = (fileName) => {
@@ -319,6 +275,13 @@ const FileManager = () => {
                                     >
                                         🔗 Link
                                     </a>
+                                    <button
+                                        className="delete-btn"
+                                        onClick={() => handleDelete(file.FileUniqueId)}
+                                        style={{ marginLeft: '8px' }}
+                                    >
+                                        🗑️ Delete
+                                    </button>
                                 </div>
                             </div>
                         ))}
