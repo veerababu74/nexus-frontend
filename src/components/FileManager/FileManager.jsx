@@ -14,17 +14,23 @@ const FileManager = () => {
 
     React.useEffect(() => {
         const fetchFiles = async () => {
-            const res = await getAllKnowledgeRecords();
-            if (res?.success && Array.isArray(res.response)) {
-                const mappedFiles = res.response.map(doc => ({
-                    Title: doc.FileName.split('.')[0],
-                    FileName: doc.FileName,
-                    Hyperlink: doc.BlobUrl,
-                    Tags: doc.Tags ? doc.Tags.split(',') : [],
-                    FileUniqueId: doc.FileUniqueId,
-                    CreatedOn: doc.CreatedDate,
-                }));
-                setFiles(mappedFiles);
+            try {
+                const res = await getAllKnowledgeRecords();
+                if (res?.success && Array.isArray(res.response)) {
+                    const mappedFiles = res.response.map(doc => ({
+                        Title: doc.FileName.split('.')[0],
+                        FileName: doc.FileName,
+                        Hyperlink: doc.BlobUrl,
+                        Tags: doc.Tags ? doc.Tags.split(',') : [],
+                        FileUniqueId: doc.FileUniqueId,
+                        CreatedOn: doc.CreatedDate,
+                    }));
+                    setFiles(mappedFiles);
+                } else {
+                    console.error('Failed to fetch files:', res?.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error fetching files:', error);
             }
         };
         fetchFiles();
@@ -50,10 +56,12 @@ const FileManager = () => {
                     setFiles(prev => [newFile, ...prev]);
                     setUploadedFiles(prev => [...prev, newFile]);
                 } else {
+                    console.error('Upload failed:', res?.detail || 'Unknown error');
                     alert(res?.detail || 'Upload failed');
                 }
             } catch (err) {
-                alert('Upload error');
+                console.error('Upload error:', err);
+                alert('Upload error: ' + (err.message || 'Unknown error'));
             }
         }
     };
@@ -66,10 +74,12 @@ const FileManager = () => {
                 setFiles(prev => prev.filter(f => f.FileUniqueId !== fileUniqueId));
                 alert('File deleted successfully');
             } else {
+                console.error('Delete failed:', res?.detail || 'Unknown error');
                 alert(res?.detail || 'Delete failed');
             }
         } catch (err) {
-            alert('Delete error');
+            console.error('Delete error:', err);
+            alert('Delete error: ' + (err.message || 'Unknown error'));
         }
     };
 
