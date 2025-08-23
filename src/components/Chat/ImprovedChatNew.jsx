@@ -10,7 +10,7 @@ const ImprovedChat = () => {
     const [error, setError] = useState('');
     const [sessionStats, setSessionStats] = useState({
         messagesCount: 0,
-        session: 'veera123',
+        session: 'veera1234',
         index: 'veera'
     });
     const messagesEndRef = useRef(null);

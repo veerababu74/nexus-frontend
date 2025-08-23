@@ -1,5 +1,5 @@
 // Improved Chat API service for enhanced chat functionality
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 /**
  * Fetch improved chat response from the backend
@@ -10,7 +10,7 @@ export const fetchImprovedChatResponse = async (message) => {
     try {
         const requestPayload = {
             message: message,
-            session_id: "veera123", // Updated to match reset endpoint
+            session_id: "veera1234", // Static as requested
             index_name: "veera" // Static as requested
         };
 
@@ -39,7 +39,7 @@ export const fetchImprovedChatResponse = async (message) => {
  * @param {string} sessionId - Session ID
  * @returns {Promise<Object>} - Session information
  */
-export const getImprovedChatSession = async (sessionId = "veera123") => {
+export const getImprovedChatSession = async (sessionId = "veera1234") => {
     try {
         const response = await fetch(`${API_BASE_URL}/improved-chat/session/${sessionId}`, {
             method: 'GET',
@@ -65,14 +65,13 @@ export const getImprovedChatSession = async (sessionId = "veera123") => {
  * @param {string} sessionId - Session ID to clear
  * @returns {Promise<boolean>} - Success status
  */
-export const clearImprovedChatSession = async (sessionId = "veera123") => {
+export const clearImprovedChatSession = async (sessionId = "veera1234") => {
     try {
-        const response = await fetch(`${API_BASE_URL}/nexus/ai/v3/chat/reset/${sessionId}`, {
-            method: 'POST',
+        const response = await fetch(`${API_BASE_URL}/improved-chat/session/${sessionId}/clear`, {
+            method: 'DELETE',
             headers: {
-                'accept': 'application/json',
+                'Content-Type': 'application/json',
             },
-            body: '',
         });
 
         return response.ok;
