@@ -25,6 +25,12 @@ const Layout = ({ children }) => {
                     >
                         🚀 Advanced Chat
                     </Link>
+                    <Link
+                        to="/faq"
+                        className={`nav-link ${location.pathname === '/faq' ? 'active' : ''}`}
+                    >
+                        ❓ FAQ
+                    </Link>
                 </div>
             </nav>
             <main className="main-content">

@@ -1,0 +1,73 @@
+// FAQ API service for handling all FAQ-related API calls
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
+
+/**
+ * Insert a new FAQ record
+ * @param {Object} faqData - The FAQ data containing title, answer, and tags
+ * @returns {Promise<Object>} - The API response
+ */
+export const insertFAQ = async (faqData) => {
+    try {
+        console.log('Inserting FAQ with data:', faqData);
+        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/insert`);
+
+        const response = await fetch(`${API_BASE_URL}/nexusai/faq/insert`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(faqData),
+        });
+
+        console.log('Insert FAQ response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.log('Error response body:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Insert FAQ response data:', data);
+
+        return data;
+    } catch (error) {
+        console.error('Error inserting FAQ:', error);
+        throw new Error('Failed to insert FAQ. Please try again.');
+    }
+};
+
+/**
+ * Fetch all FAQ records from the backend
+ * @returns {Promise<Array>} - Array of FAQ records
+ */
+export const getAllFAQs = async () => {
+    try {
+        console.log('Fetching all FAQs');
+        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/all`);
+
+        const response = await fetch(`${API_BASE_URL}/nexusai/faq/all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        console.log('Get all FAQs response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.log('Error response body:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Get all FAQs response data:', data);
+
+        // Return the response array or empty array if no data
+        return data.response || data.data || [];
+    } catch (error) {
+        console.error('Error fetching FAQs:', error);
+        throw new Error('Failed to fetch FAQs. Please try again.');
+    }
+};
