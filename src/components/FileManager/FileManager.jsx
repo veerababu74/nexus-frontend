@@ -39,7 +39,7 @@ const FileManager = () => {
     const handleFileUpload = async (event) => {
         const selectedFiles = Array.from(event.target.files);
         for (const file of selectedFiles) {
-            const index_name = 'my_index'; // You may want to make this dynamic
+            const index_name = 'veera'; // You may want to make this dynamic
             const tag = undefined;
             try {
                 const res = await uploadDocument({ file, index_name, tag });
