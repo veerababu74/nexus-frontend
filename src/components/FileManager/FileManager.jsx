@@ -67,7 +67,7 @@ const FileManager = () => {
     };
 
     const handleDelete = async (fileUniqueId) => {
-        const index_name = 'my_index'; // You may want to make this dynamic
+        const index_name = 'veera'; // You may want to make this dynamic
         try {
             const res = await deleteDocument({ index_name, file_unique_id: fileUniqueId });
             if (res?.status === 'Success') {
