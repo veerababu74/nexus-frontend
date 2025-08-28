@@ -1,27 +1,25 @@
-/* Enhanced features for Improved Chat - using regular chat base styles */
+/* Enhanced features for Improved Chat - using Facebook theme */
 
 /* Keyframes for animations */
 @keyframes subtlePulse {
-
     0%,
     100% {
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2);
     }
 
     50% {
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 2px 8px rgba(24, 119, 242, 0.4);
     }
 }
 
 @keyframes subtlePulseInterest {
-
     0%,
     100% {
-        box-shadow: 0 2px 8px rgba(250, 112, 154, 0.2);
+        box-shadow: 0 2px 8px rgba(66, 184, 131, 0.2);
     }
 
     50% {
-        box-shadow: 0 2px 8px rgba(250, 112, 154, 0.4);
+        box-shadow: 0 2px 8px rgba(66, 184, 131, 0.4);
     }
 }
 
@@ -34,13 +32,13 @@
 }
 
 .stat-badge {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--on-primary);
     padding: 6px 12px;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
 }
 
@@ -48,13 +46,13 @@
 .enhanced-response-details {
     margin-top: 15px;
     padding: 15px;
-    background: linear-gradient(135deg, #f7fafc, #edf2f7);
+    background: var(--surface);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border);
 }
 
 .enhanced-response-details h4 {
-    color: #2d3748;
+    color: var(--text);
     margin: 0 0 12px 0;
     font-size: 0.9rem;
     font-weight: 600;
@@ -68,11 +66,11 @@
 }
 
 .analytics-item {
-    background: white;
+    background: var(--background);
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 0.8rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -80,17 +78,17 @@
 
 .analytics-label {
     font-weight: 600;
-    color: #4a5568;
+    color: var(--text);
 }
 
 .analytics-value {
-    color: #2d3748;
+    color: var(--text);
     font-weight: 500;
 }
 
 /* Enhanced Follow-up */
 .enhanced-follow-up {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary);
     color: white;
     border-radius: 12px;
     padding: 15px 18px;
@@ -101,7 +99,7 @@
     align-items: center;
     gap: 12px;
     position: relative;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 4px 15px rgba(24, 119, 242, 0.2);
 }
 
 .enhanced-follow-up::before {
@@ -109,7 +107,7 @@
     position: absolute;
     top: -8px;
     left: 15px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary);
     color: white;
     font-size: 0.7rem;
     padding: 2px 8px;
@@ -119,8 +117,8 @@
 
 .enhanced-follow-up:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    box-shadow: 0 8px 25px rgba(24, 119, 242, 0.4);
+    background: var(--primary-hover);
 }
 
 .enhanced-follow-up:active {
@@ -154,7 +152,7 @@
 }
 
 .enhanced-topics-section h5 {
-    color: #2d3748;
+    color: var(--text);
     margin: 0 0 10px 0;
     font-size: 0.85rem;
     font-weight: 600;
@@ -166,7 +164,7 @@
 .enhanced-topics-section h5::after {
     content: "👆 Click to ask";
     font-size: 0.7rem;
-    color: #718096;
+    color: var(--text-secondary);
     font-weight: 400;
     opacity: 0.8;
 }
@@ -178,7 +176,7 @@
 }
 
 .enhanced-topic-tag {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary);
     color: white;
     padding: 6px 14px;
     border-radius: 20px;
@@ -189,14 +187,14 @@
     border: none;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2);
     animation: subtlePulse 3s ease-in-out infinite;
 }
 
 .enhanced-topic-tag:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
+    background: var(--primary-hover);
     animation: none;
 }
 
@@ -206,7 +204,7 @@
 }
 
 .enhanced-interest-tag {
-    background: linear-gradient(135deg, #fa709a, #fee140);
+    background: #42b883;
     color: white;
     padding: 6px 14px;
     border-radius: 20px;
@@ -215,7 +213,7 @@
     border: none;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(250, 112, 154, 0.2);
+    box-shadow: 0 2px 8px rgba(66, 184, 131, 0.2);
     transition: all 0.3s ease;
 }
 
@@ -226,8 +224,8 @@
 
 .enhanced-interest-tag.clickable:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4);
-    background: linear-gradient(135deg, #f093fb, #f5576c);
+    box-shadow: 0 6px 20px rgba(66, 184, 131, 0.4);
+    background: #369870;
     animation: none;
 }
 
@@ -245,10 +243,10 @@
 }
 
 .flag-item {
-    background: white;
+    background: var(--background);
     padding: 6px 10px;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -257,16 +255,16 @@
 
 .flag-label {
     font-weight: 600;
-    color: #4a5568;
+    color: var(--text);
 }
 
 .flag-value {
     font-weight: 500;
-    color: #718096;
+    color: var(--text-secondary);
 }
 
 .flag-value.active {
-    color: #38a169;
+    color: #42b883;
 }
 
 /* Enhanced Message Layout for Improved Chat */

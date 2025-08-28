@@ -1,0 +1,95 @@
+/* Main Layout Styles */
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--background);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+  overflow-x: hidden;
+  background: var(--background);
+}
+
+.main-content.sidebar-collapsed {
+  margin-left: 70px;
+}
+
+.content-wrapper {
+  padding: 0;
+  max-width: 100%;
+  min-height: calc(100vh);
+  overflow-x: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 260px;
+  }
+  
+  .main-content.sidebar-collapsed {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding-top: 0;
+  }
+  
+  .main-content.sidebar-collapsed {
+    margin-left: 0;
+  }
+  
+  .content-wrapper {
+    padding: 0;
+    min-height: 100vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 16px 12px;
+  }
+}
+
+/* Smooth transitions for content */
+.main-content * {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scroll */
+.main-layout,
+.main-content,
+.content-wrapper {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Ensure responsive images and media */
+.content-wrapper img,
+.content-wrapper video,
+.content-wrapper iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive tables */
+.content-wrapper table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .content-wrapper table {
+    font-size: 14px;
+  }
+}

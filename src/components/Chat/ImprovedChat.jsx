@@ -3,8 +3,10 @@ import './Chat.css'; // Use the same CSS as regular chat
 import './ImprovedChat.css'; // Additional enhanced styles
 import ChatHeader from '../ChatHeader/ChatHeader';
 import { fetchImprovedChatResponse, clearImprovedChatSession } from '../../api/improvedChatAPI';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const ImprovedChat = () => {
+    const { theme } = useTheme();
     const [chatLog, setChatLog] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);

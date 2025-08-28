@@ -1,6 +1,6 @@
 /* Chat Header Styles */
 .chat-navigation-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
@@ -13,12 +13,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 30px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(15px);
 }
 
 .header-content h1 {
-    color: white;
+    color: var(--on-primary);
     margin: 0;
     font-size: 1.6rem;
     font-weight: 700;
@@ -41,20 +41,20 @@
 }
 
 .stat-badge {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--on-primary);
     padding: 8px 12px;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
     white-space: nowrap;
 }
 
 .clear-chat-btn {
-    background: rgba(255, 107, 107, 0.8);
-    color: white;
+    background: rgba(220, 38, 38, 0.8);
+    color: var(--on-primary);
     border: none;
     padding: 8px 16px;
     border-radius: 15px;
@@ -66,9 +66,9 @@
 }
 
 .clear-chat-btn:hover {
-    background: rgba(255, 107, 107, 1);
+    background: rgba(220, 38, 38, 1);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 /* Mobile Responsiveness */

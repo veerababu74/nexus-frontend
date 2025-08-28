@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import './Chat.css';
 import ChatHeader from '../ChatHeader/ChatHeader';
 import { fetchChatResponse } from '../../api/chatAPI';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Chat = () => {
+    const { theme } = useTheme();
     const [history, setHistory] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [chatLog, setChatLog] = useState([]);
@@ -93,7 +95,13 @@ const Chat = () => {
     };
 
     return (
-        <div className="chat-container">
+        <div 
+            className="chat-container"
+            style={{ 
+                backgroundColor: theme.colors.background,
+                color: theme.colors.textPrimary 
+            }}
+        >
             <ChatHeader
                 chatType="regular"
                 sessionStats={sessionStats}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import FAQ from '../components/FAQ/FAQ';
+import Knowledge from '../components/Knowledge/Knowledge';
 
-const FAQPage = () => {
+const KnowledgePage = () => {
     const { theme } = useTheme();
     
     return (
@@ -11,9 +11,9 @@ const FAQPage = () => {
             color: theme.colors.textPrimary,
             minHeight: '100%'
         }}>
-            <FAQ />
+            <Knowledge />
         </div>
     );
 };
 
-export default FAQPage;
+export default KnowledgePage;

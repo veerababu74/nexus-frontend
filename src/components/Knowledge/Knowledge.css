@@ -1,0 +1,145 @@
+/* Knowledge Component Styles */
+.knowledge-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Header */
+.knowledge-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1.5rem 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.header-content {
+  margin-bottom: 1.5rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-title h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.header-title p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.tab-button.active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Content Area */
+.knowledge-content {
+  flex: 1;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Override child component styles to fit the layout */
+.knowledge-content .faq-container,
+.knowledge-content .file-manager-container {
+  height: auto;
+  min-height: auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow-x: hidden;
+}
+
+.knowledge-content .faq-header,
+.knowledge-content .file-manager-header {
+  display: none; /* Hide duplicate headers */
+}
+
+.knowledge-content .faq-container {
+  padding: 2rem;
+}
+
+.knowledge-content .file-manager-container {
+  padding: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .knowledge-header {
+    padding: 1rem;
+  }
+  
+  .header-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .header-title h1 {
+    font-size: 1.5rem;
+  }
+  
+  .tab-navigation {
+    gap: 0.25rem;
+  }
+  
+  .tab-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .knowledge-content .faq-container,
+  .knowledge-content .file-manager-container {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-button span {
+    display: none;
+  }
+  
+  .tab-button {
+    padding: 0.6rem;
+    justify-content: center;
+  }
+}
