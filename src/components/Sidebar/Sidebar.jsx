@@ -12,7 +12,10 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiSettings,
-  FiShield
+  FiShield,
+  FiBarChart,
+  FiGlobe,
+  FiFileText
 } from 'react-icons/fi';
 import './Sidebar.css';
 
@@ -46,12 +49,6 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
       path: '/'
     },
     {
-      id: 'chat',
-      label: 'Chat',
-      icon: FiMessageCircle,
-      path: '/improved'
-    },
-    {
       id: 'knowledge',
       label: 'Knowledge',
       icon: FiBook,
@@ -62,6 +59,30 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
       label: 'Tone & Safety',
       icon: FiShield,
       path: '/tone-safety'
+    },
+    {
+      id: 'chat',
+      label: 'Sandbox',
+      icon: FiMessageCircle,
+      path: '/improved'
+    },
+    {
+      id: 'publishing',
+      label: 'Publishing',
+      icon: FiGlobe,
+      path: '/publishing'
+    },
+    {
+      id: 'leads-logs',
+      label: 'Leads & Logs',
+      icon: FiFileText,
+      path: '/leads-logs'
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: FiBarChart,
+      path: '/analytics'
     },
     {
       id: 'settings',
@@ -96,6 +117,15 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
     }
     if (path === '/settings') {
       return location.pathname === '/settings';
+    }
+    if (path === '/analytics') {
+      return location.pathname === '/analytics';
+    }
+    if (path === '/publishing') {
+      return location.pathname === '/publishing';
+    }
+    if (path === '/leads-logs') {
+      return location.pathname === '/leads-logs';
     }
     return location.pathname.startsWith(path);
   };
