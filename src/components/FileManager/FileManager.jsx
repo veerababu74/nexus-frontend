@@ -419,8 +419,7 @@ const FileManager = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
-                            backgroundColor: theme.colors.surface,
-                            border: `1px solid ${theme.colors.border}`,
+                            backgroundColor: 'transparent',
                             color: theme.colors.textPrimary
                         }}
                     />

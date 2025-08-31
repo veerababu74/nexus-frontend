@@ -194,7 +194,79 @@
     transform: none;
 }
 
-/* Search and Filter Styles */
+/* Search Section Styles */
+.search-section {
+    margin-bottom: 2rem;
+}
+
+.search-section .search-container {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    flex: 1;
+    max-width: 500px;
+    min-width: 300px;
+    transition: all 0.2s ease;
+}
+
+.search-box:focus-within {
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.875rem;
+}
+
+.search-input::placeholder {
+    opacity: 0.6;
+}
+
+.add-faq-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.add-faq-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Simplified FAQ Item Styles */
+.faq-item-simple {
+    transition: all 0.2s ease;
+}
+
+.faq-item-simple:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Search and Filter Styles - keeping for backward compatibility */
 .search-filter-section {
     margin-bottom: 2rem;
     display: flex;
@@ -435,6 +507,17 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .search-section .search-container {
+        gap: 1.5rem;
+        padding: 0 0.5rem;
+    }
+    
+    .search-box {
+        min-width: 250px;
+    }
+}
+
 @media (max-width: 768px) {
     .faq-container {
         padding: 1rem;
@@ -453,6 +536,25 @@
     .action-btn {
         flex: 1;
         justify-content: center;
+    }
+    
+    .search-section .search-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+        padding: 0;
+    }
+    
+    .search-box {
+        max-width: none;
+        min-width: unset;
+    }
+    
+    .add-faq-btn {
+        align-self: center;
+        width: fit-content;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
     }
     
     .form-row {
@@ -485,6 +587,16 @@
     
     .faq-answer {
         padding: 1rem;
+    }
+    
+    .faq-item-simple {
+        padding: 1rem !important;
+    }
+    
+    .faq-meta-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem !important;
     }
 }
 

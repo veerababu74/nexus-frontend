@@ -91,3 +91,38 @@ export const getAllFAQs = async () => {
         throw new Error('Failed to fetch FAQs. Please try again.');
     }
 };
+
+/**
+ * Delete a specific FAQ record by ID
+ * @param {string} id - The ID of the FAQ to delete
+ * @returns {Promise<Object>} - The API response
+ */
+export const deleteFAQ = async (id) => {
+    try {
+        console.log('Deleting FAQ with ID:', id);
+        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/delete?id=${id}`);
+
+        const response = await fetch(`${API_BASE_URL}/nexusai/faq/delete?id=${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        console.log('Delete FAQ response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.log('Error response body:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Delete FAQ response data:', data);
+
+        return data;
+    } catch (error) {
+        console.error('Error deleting FAQ:', error);
+        throw new Error('Failed to delete FAQ. Please try again.');
+    }
+};
