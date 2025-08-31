@@ -11,12 +11,19 @@ export const insertFAQ = async (faqData) => {
         console.log('Inserting FAQ with data:', faqData);
         console.log('API URL:', `${API_BASE_URL}/nexusai/faq/insert`);
 
+        // Map the field names to match API expectations
+        const apiData = {
+            title: faqData.question,
+            answer: faqData.answer,
+            tags: faqData.tags
+        };
+
         const response = await fetch(`${API_BASE_URL}/nexusai/faq/insert`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(faqData),
+            body: JSON.stringify(apiData),
         });
 
         console.log('Insert FAQ response status:', response.status);
@@ -64,8 +71,21 @@ export const getAllFAQs = async () => {
         const data = await response.json();
         console.log('Get all FAQs response data:', data);
 
-        // Return the response array or empty array if no data
-        return data.response || data.data || [];
+        // Check if the API returned success
+        if (!data.success) {
+            throw new Error(data.message || 'API returned unsuccessful response');
+        }
+
+        // Map the API response to match the expected format
+        const faqs = (data.response || []).map(faq => ({
+            id: faq.Id,
+            question: faq.Title,
+            answer: faq.Answer,
+            tags: faq.Tags
+        }));
+
+        console.log('Mapped FAQs:', faqs);
+        return { data: faqs };
     } catch (error) {
         console.error('Error fetching FAQs:', error);
         throw new Error('Failed to fetch FAQs. Please try again.');
