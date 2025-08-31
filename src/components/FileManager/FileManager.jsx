@@ -133,19 +133,49 @@ const FileManager = () => {
     };
 
     const handleDelete = async (fileUniqueId) => {
+        // Confirm deletion
+        const confirmed = window.confirm('Are you sure you want to delete this document? This action cannot be undone.');
+        if (!confirmed) {
+            return;
+        }
+
         const index_name = 'veera';
+        console.log('Starting delete process for file:', fileUniqueId);
+        
         try {
-            const res = await deleteDocument({ index_name, file_unique_id: fileUniqueId });
-            if (res?.status === 'Success') {
+            setMessage('Deleting document...');
+            
+            const res = await deleteDocument({ 
+                index_name, 
+                file_unique_id: fileUniqueId 
+            });
+            
+            console.log('Delete response:', res);
+            
+            // Check if deletion was successful
+            if (res && (res.status === 'Success' || res.status === 'success')) {
+                // Remove the file from the local state
                 setFiles(prev => prev.filter(f => f.FileUniqueId !== fileUniqueId));
-                setMessage('File deleted successfully');
+                setMessage(`File deleted successfully! ${res.documents_deleted || 0} documents removed.`);
+            } else if (res && res.detail) {
+                // API returned error details
+                console.error('Delete failed with details:', res.detail);
+                setMessage(`Delete failed: ${Array.isArray(res.detail) ? res.detail[0]?.msg : res.detail}`);
             } else {
-                console.error('Delete failed:', res?.detail || 'Unknown error');
-                setMessage(res?.detail || 'Delete failed');
+                // Unexpected response format
+                console.error('Unexpected delete response:', res);
+                setMessage('Delete operation completed but response was unexpected. Please refresh to verify.');
             }
         } catch (err) {
-            console.error('Delete error:', err);
-            setMessage('Delete error: ' + (err.message || 'Unknown error'));
+            console.error('Delete error caught:', err);
+            
+            if (err.message.includes('Network Error')) {
+                setMessage('Network error: Please check your internet connection and try again.');
+            } else if (err.message.includes('No response received')) {
+                setMessage('Server did not respond. Please try again later.');
+            } else {
+                setMessage(`Delete error: ${err.message || 'Unknown error occurred'}`);
+            }
         }
     };
 
