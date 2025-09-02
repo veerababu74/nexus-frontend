@@ -372,20 +372,22 @@ const FAQ = () => {
                                         {/* FAQ Question - Clickable */}
                                         <div 
                                             className="faq-question"
-                                            onClick={() => toggleFAQ(faq.id)}
                                             style={{ 
                                                 backgroundColor: expandedFAQ === faq.id ? theme.colors.hover : 'transparent',
-                                                cursor: 'pointer'
                                             }}
                                         >
-                                            <div className="question-content">
+                                            <div 
+                                                className="question-content"
+                                                onClick={() => toggleFAQ(faq.id)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
                                                 <h3 style={{ 
                                                     color: theme.colors.textPrimary,
                                                     margin: '0',
-                                                    fontSize: '1.1rem',
+                                                    fontSize: '1rem',
                                                     fontWeight: '600'
                                                 }}>
-                                                    <FiHelpCircle size={18} style={{ marginRight: '0.5rem', color: theme.colors.primary }} />
+                                                    <FiHelpCircle size={16} style={{ marginRight: '0.5rem', color: theme.colors.primary }} />
                                                     {faq.question}
                                                 </h3>
                                                 {faq.tags && (
@@ -408,10 +410,71 @@ const FAQ = () => {
                                             </div>
                                             <div className="question-actions">
                                                 <button
-                                                    className="toggle-btn"
-                                                    style={{ color: theme.colors.textSecondary }}
+                                                    onClick={() => toggleFAQ(faq.id)}
+                                                    className="expand-btn"
+                                                    style={{ 
+                                                        color: theme.colors.textSecondary,
+                                                        background: 'transparent',
+                                                        border: `1px solid ${theme.colors.border}`,
+                                                        borderRadius: '6px',
+                                                        padding: '0.4rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        width: '32px',
+                                                        height: '32px',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.backgroundColor = theme.colors.primary;
+                                                        e.target.style.color = theme.colors.onPrimary;
+                                                        e.target.style.borderColor = theme.colors.primary;
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.backgroundColor = 'transparent';
+                                                        e.target.style.color = theme.colors.textSecondary;
+                                                        e.target.style.borderColor = theme.colors.border;
+                                                    }}
+                                                    title={expandedFAQ === faq.id ? "Collapse" : "Expand"}
                                                 >
                                                     {expandedFAQ === faq.id ? '−' : '+'}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(faq.id)}
+                                                    disabled={isLoading}
+                                                    className="delete-btn-inline"
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: `1px solid ${theme.colors.error || '#ef4444'}`,
+                                                        color: theme.colors.error || '#ef4444',
+                                                        borderRadius: '6px',
+                                                        padding: '0.4rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        width: '32px',
+                                                        height: '32px',
+                                                        transition: 'all 0.2s ease',
+                                                        opacity: isLoading ? 0.6 : 1,
+                                                        marginLeft: '0.5rem'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        if (!isLoading) {
+                                                            e.target.style.backgroundColor = theme.colors.error || '#ef4444';
+                                                            e.target.style.color = 'white';
+                                                        }
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        if (!isLoading) {
+                                                            e.target.style.backgroundColor = 'transparent';
+                                                            e.target.style.color = theme.colors.error || '#ef4444';
+                                                        }
+                                                    }}
+                                                    title="Delete FAQ"
+                                                >
+                                                    <FiTrash2 size={14} />
                                                 </button>
                                             </div>
                                         </div>
@@ -427,53 +490,12 @@ const FAQ = () => {
                                             >
                                                 <p style={{ 
                                                     color: theme.colors.textPrimary,
-                                                    margin: '0 0 1rem 0',
+                                                    margin: '0',
                                                     lineHeight: '1.6',
-                                                    fontSize: '0.95rem'
+                                                    fontSize: '0.9rem'
                                                 }}>
                                                     {faq.answer}
                                                 </p>
-                                                
-                                                {/* Actions */}
-                                                <div className="faq-actions">
-                                                    <button
-                                                        onClick={() => handleDelete(faq.id)}
-                                                        disabled={isLoading}
-                                                        className="delete-btn"
-                                                        style={{
-                                                            background: 'transparent',
-                                                            border: `1px solid ${theme.colors.error || '#ef4444'}`,
-                                                            color: theme.colors.error || '#ef4444',
-                                                            padding: '0.5rem 1rem',
-                                                            borderRadius: '6px',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '0.25rem',
-                                                            fontSize: '0.8rem',
-                                                            fontWeight: '500',
-                                                            transition: 'all 0.2s ease',
-                                                            opacity: isLoading ? 0.6 : 1,
-                                                            margin: '0 auto'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            if (!isLoading) {
-                                                                e.target.style.backgroundColor = theme.colors.error || '#ef4444';
-                                                                e.target.style.color = 'white';
-                                                            }
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            if (!isLoading) {
-                                                                e.target.style.backgroundColor = 'transparent';
-                                                                e.target.style.color = theme.colors.error || '#ef4444';
-                                                            }
-                                                        }}
-                                                        title="Delete FAQ"
-                                                    >
-                                                        <FiTrash2 size={14} />
-                                                        Delete
-                                                    </button>
-                                                </div>
                                             </div>
                                         )}
                                     </div>
