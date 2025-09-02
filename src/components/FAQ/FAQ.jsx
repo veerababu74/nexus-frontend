@@ -436,19 +436,6 @@ const FAQ = () => {
                                                 
                                                 {/* Actions */}
                                                 <div className="faq-actions">
-                                                    {faq.id && (
-                                                        <span 
-                                                            className="faq-id"
-                                                            style={{ 
-                                                                color: theme.colors.textSecondary,
-                                                                fontSize: '0.8rem',
-                                                                fontFamily: 'monospace'
-                                                            }}
-                                                        >
-                                                            ID: {faq.id}
-                                                        </span>
-                                                    )}
-                                                    
                                                     <button
                                                         onClick={() => handleDelete(faq.id)}
                                                         disabled={isLoading}
@@ -466,7 +453,8 @@ const FAQ = () => {
                                                             fontSize: '0.8rem',
                                                             fontWeight: '500',
                                                             transition: 'all 0.2s ease',
-                                                            opacity: isLoading ? 0.6 : 1
+                                                            opacity: isLoading ? 0.6 : 1,
+                                                            margin: '0 auto'
                                                         }}
                                                         onMouseEnter={(e) => {
                                                             if (!isLoading) {
