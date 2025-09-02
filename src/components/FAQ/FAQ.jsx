@@ -24,7 +24,7 @@ const FAQ = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [showAddForm, setShowAddForm] = useState(false);
+    const [expandedFAQ, setExpandedFAQ] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     // Load FAQs on component mount
@@ -80,7 +80,6 @@ const FAQ = () => {
         try {
             await insertFAQ(formData);
             setFormData({ question: '', answer: '', tags: '' });
-            setShowAddForm(false);
             await loadFAQs(); // Reload FAQs after successful submission
             setMessage({ type: 'success', text: 'FAQ added successfully!' });
         } catch (error) {
@@ -107,6 +106,10 @@ const FAQ = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const toggleFAQ = (faqId) => {
+        setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
     };
 
     // Get unique tags for filtering (keeping for display purposes)
@@ -185,27 +188,28 @@ const FAQ = () => {
                 </div>
             )}
 
-            {/* Add FAQ Form */}
-            {showAddForm && (
-                <div 
-                    className="add-faq-section"
-                    style={{ 
-                        backgroundColor: theme.colors.surface,
-                        border: `1px solid ${theme.colors.border}`
-                    }}
-                >
-                    <div className="form-header">
-                        <h2 
-                            className="form-title"
-                            style={{ color: theme.colors.textPrimary }}
-                        >
-                            <FiEdit3 size={20} />
-                            Add New FAQ
-                        </h2>
-                    </div>
-                    
-                    <form onSubmit={handleSubmit} className="faq-form">
-                        <div className="form-row">
+            {/* Two Column Layout */}
+            <div className="faq-layout">
+                {/* Left Side - Add FAQ Form */}
+                <div className="faq-left-panel">
+                    <div 
+                        className="add-faq-section"
+                        style={{ 
+                            backgroundColor: theme.colors.surface,
+                            border: `1px solid ${theme.colors.border}`
+                        }}
+                    >
+                        <div className="form-header">
+                            <h2 
+                                className="form-title"
+                                style={{ color: theme.colors.textPrimary }}
+                            >
+                                <FiEdit3 size={20} />
+                                Add New FAQ
+                            </h2>
+                        </div>
+                        
+                        <form onSubmit={handleSubmit} className="faq-form">
                             <div className="form-group">
                                 <label 
                                     htmlFor="question"
@@ -252,277 +256,244 @@ const FAQ = () => {
                                     }}
                                 />
                             </div>
-                        </div>
 
-                        <div className="form-group">
-                            <label 
-                                htmlFor="answer"
-                                style={{ color: theme.colors.textPrimary }}
-                            >
-                                <FiFileText size={16} />
-                                Answer
-                            </label>
-                            <textarea
-                                id="answer"
-                                name="answer"
-                                value={formData.answer}
-                                onChange={handleInputChange}
-                                placeholder="Provide a detailed answer..."
-                                rows="4"
-                                required
+                            <div className="form-group">
+                                <label 
+                                    htmlFor="answer"
+                                    style={{ color: theme.colors.textPrimary }}
+                                >
+                                    <FiFileText size={16} />
+                                    Answer
+                                </label>
+                                <textarea
+                                    id="answer"
+                                    name="answer"
+                                    value={formData.answer}
+                                    onChange={handleInputChange}
+                                    placeholder="Provide a detailed answer..."
+                                    rows="6"
+                                    required
+                                    style={{
+                                        backgroundColor: theme.colors.background,
+                                        border: `1px solid ${theme.colors.border}`,
+                                        color: theme.colors.textPrimary
+                                    }}
+                                />
+                            </div>
+
+                            <div className="form-actions">
+                                <button
+                                    type="submit"
+                                    className="submit-btn"
+                                    disabled={isLoading}
+                                    style={{
+                                        backgroundColor: theme.colors.primary,
+                                        color: theme.colors.onPrimary,
+                                        width: '100%'
+                                    }}
+                                >
+                                    {isLoading ? 'Adding...' : 'Add FAQ'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {/* Right Side - FAQ List */}
+                <div className="faq-right-panel">
+                    {/* Search Section */}
+                    <div className="search-section">
+                        <div className="search-box">
+                            <FiSearch size={20} style={{ color: theme.colors.textSecondary }} />
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Search FAQs..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 style={{
-                                    backgroundColor: theme.colors.background,
-                                    border: `1px solid ${theme.colors.border}`,
+                                    backgroundColor: 'transparent',
                                     color: theme.colors.textPrimary
                                 }}
                             />
                         </div>
-
-                        <div className="form-actions">
-                            <button
-                                type="button"
-                                className="cancel-btn"
-                                onClick={() => setShowAddForm(false)}
-                                style={{
-                                    backgroundColor: theme.colors.background,
-                                    border: `1px solid ${theme.colors.border}`,
-                                    color: theme.colors.textPrimary
-                                }}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="submit-btn"
-                                disabled={isLoading}
-                                style={{
-                                    backgroundColor: theme.colors.primary,
-                                    color: theme.colors.onPrimary
-                                }}
-                            >
-                                {isLoading ? 'Adding...' : 'Add FAQ'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            )}
-
-            {/* Search Section */}
-            <div className="search-section">
-                <div className="search-container">
-                    <div className="search-box">
-                        <FiSearch size={20} style={{ color: theme.colors.textSecondary }} />
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Search FAQs by title, answer, or tags..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{
-                                backgroundColor: 'transparent',
-                                color: theme.colors.textPrimary
-                            }}
-                        />
-                    </div>
-                    <button
-                        className="add-faq-btn"
-                        onClick={() => setShowAddForm(!showAddForm)}
-                        style={{
+                        <div className="faq-count-badge" style={{ 
                             backgroundColor: theme.colors.primary,
-                            color: theme.colors.onPrimary
-                        }}
-                    >
-                        {showAddForm ? <FiX size={16} /> : <FiPlus size={16} />}
-                        {showAddForm ? 'Cancel' : 'Add FAQ'}
-                    </button>
-                </div>
-            </div>
-
-            {/* FAQ List */}
-            <div className="faq-list-section">
-                <div className="section-header">
-                    <h2 
-                        className="section-title"
-                        style={{ color: theme.colors.textPrimary }}
-                    >
-                        Frequently Asked Questions
-                        <span 
-                            className="faq-count"
-                            style={{ 
-                                backgroundColor: theme.colors.primary,
-                                color: theme.colors.onPrimary 
-                            }}
-                        >
-                            {filteredFAQs.length}
-                        </span>
-                    </h2>
-                </div>
-
-                {isLoading && faqs.length === 0 ? (
-                    <div 
-                        className="loading-state"
-                        style={{ 
-                            backgroundColor: theme.colors.surface,
-                            border: `1px solid ${theme.colors.border}`
-                        }}
-                    >
-                        <div className="loading-spinner"></div>
-                        <p style={{ color: theme.colors.textSecondary }}>Loading FAQs...</p>
+                            color: theme.colors.onPrimary 
+                        }}>
+                            {filteredFAQs.length} FAQs
+                        </div>
                     </div>
-                ) : filteredFAQs.length === 0 ? (
-                    <div 
-                        className="empty-state"
-                        style={{ 
-                            backgroundColor: theme.colors.surface,
-                            border: `1px solid ${theme.colors.border}`
-                        }}
-                    >
-                        <FiHelpCircle 
-                            size={48} 
-                            style={{ color: theme.colors.textSecondary, opacity: 0.5 }}
-                        />
-                        <h3 style={{ color: theme.colors.textPrimary }}>No FAQs found</h3>
-                        <p style={{ color: theme.colors.textSecondary }}>
-                            {searchTerm 
-                                ? 'Try adjusting your search criteria' 
-                                : 'Add your first FAQ to get started'
-                            }
-                        </p>
-                        {!searchTerm && !showAddForm && (
-                            <button
-                                className="empty-action-btn"
-                                onClick={() => setShowAddForm(true)}
-                                style={{
-                                    backgroundColor: theme.colors.primary,
-                                    color: theme.colors.onPrimary
-                                }}
-                            >
-                                <FiPlus size={16} />
-                                Add First FAQ
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="faq-list">
-                        {filteredFAQs.map((faq, index) => (
+
+                    {/* FAQ List Container */}
+                    <div className="faq-list-container">
+                        {isLoading && faqs.length === 0 ? (
                             <div 
-                                key={faq.id || index} 
-                                className="faq-item-simple"
+                                className="loading-state"
                                 style={{ 
                                     backgroundColor: theme.colors.surface,
-                                    border: `1px solid ${theme.colors.border}`,
-                                    borderRadius: '8px',
-                                    padding: '1.5rem',
-                                    marginBottom: '1rem'
+                                    border: `1px solid ${theme.colors.border}`
                                 }}
                             >
-                                {/* FAQ Title */}
-                                <div className="faq-title-row">
-                                    <h3 style={{ 
-                                        color: theme.colors.textPrimary,
-                                        margin: '0 0 1rem 0',
-                                        fontSize: '1.1rem',
-                                        fontWeight: '600'
-                                    }}>
-                                        <FiHelpCircle size={18} style={{ marginRight: '0.5rem', color: theme.colors.primary }} />
-                                        {faq.question}
-                                    </h3>
-                                </div>
+                                <div className="loading-spinner"></div>
+                                <p style={{ color: theme.colors.textSecondary }}>Loading FAQs...</p>
+                            </div>
+                        ) : filteredFAQs.length === 0 ? (
+                            <div 
+                                className="empty-state"
+                                style={{ 
+                                    backgroundColor: theme.colors.surface,
+                                    border: `1px solid ${theme.colors.border}`
+                                }}
+                            >
+                                <FiHelpCircle 
+                                    size={48} 
+                                    style={{ color: theme.colors.textSecondary, opacity: 0.5 }}
+                                />
+                                <h3 style={{ color: theme.colors.textPrimary }}>No FAQs found</h3>
+                                <p style={{ color: theme.colors.textSecondary }}>
+                                    {searchTerm 
+                                        ? 'Try adjusting your search criteria' 
+                                        : 'Add your first FAQ using the form on the left'
+                                    }
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="faq-list">
+                                {filteredFAQs.map((faq, index) => (
+                                    <div 
+                                        key={faq.id || index} 
+                                        className="faq-item"
+                                        style={{ 
+                                            backgroundColor: theme.colors.surface,
+                                            border: `1px solid ${theme.colors.border}`,
+                                        }}
+                                    >
+                                        {/* FAQ Question - Clickable */}
+                                        <div 
+                                            className="faq-question"
+                                            onClick={() => toggleFAQ(faq.id)}
+                                            style={{ 
+                                                backgroundColor: expandedFAQ === faq.id ? theme.colors.hover : 'transparent',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <div className="question-content">
+                                                <h3 style={{ 
+                                                    color: theme.colors.textPrimary,
+                                                    margin: '0',
+                                                    fontSize: '1.1rem',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    <FiHelpCircle size={18} style={{ marginRight: '0.5rem', color: theme.colors.primary }} />
+                                                    {faq.question}
+                                                </h3>
+                                                {faq.tags && (
+                                                    <div className="question-tags">
+                                                        {faq.tags.split(',').map((tag, tagIndex) => (
+                                                            <span 
+                                                                key={tagIndex}
+                                                                className="tag"
+                                                                style={{
+                                                                    backgroundColor: theme.colors.primary + '20',
+                                                                    color: theme.colors.primary,
+                                                                }}
+                                                            >
+                                                                <FiTag size={12} />
+                                                                {tag.trim()}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="question-actions">
+                                                <button
+                                                    className="toggle-btn"
+                                                    style={{ color: theme.colors.textSecondary }}
+                                                >
+                                                    {expandedFAQ === faq.id ? '−' : '+'}
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                {/* FAQ Answer */}
-                                <div className="faq-answer-row" style={{ marginBottom: '1rem' }}>
-                                    <p style={{ 
-                                        color: theme.colors.textPrimary,
-                                        margin: '0',
-                                        lineHeight: '1.6',
-                                        fontSize: '0.95rem'
-                                    }}>
-                                        {faq.answer}
-                                    </p>
-                                </div>
-
-                                {/* FAQ Tags and ID */}
-                                <div className="faq-meta-row" style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    flexWrap: 'wrap',
-                                    gap: '0.5rem'
-                                }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                                        {faq.tags && (
-                                            <div className="faq-tags" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                                {faq.tags.split(',').map((tag, tagIndex) => (
-                                                    <span 
-                                                        key={tagIndex}
+                                        {/* FAQ Answer - Expandable */}
+                                        {expandedFAQ === faq.id && (
+                                            <div 
+                                                className="faq-answer"
+                                                style={{ 
+                                                    backgroundColor: theme.colors.background,
+                                                    borderTop: `1px solid ${theme.colors.border}`
+                                                }}
+                                            >
+                                                <p style={{ 
+                                                    color: theme.colors.textPrimary,
+                                                    margin: '0 0 1rem 0',
+                                                    lineHeight: '1.6',
+                                                    fontSize: '0.95rem'
+                                                }}>
+                                                    {faq.answer}
+                                                </p>
+                                                
+                                                {/* Actions */}
+                                                <div className="faq-actions">
+                                                    {faq.id && (
+                                                        <span 
+                                                            className="faq-id"
+                                                            style={{ 
+                                                                color: theme.colors.textSecondary,
+                                                                fontSize: '0.8rem',
+                                                                fontFamily: 'monospace'
+                                                            }}
+                                                        >
+                                                            ID: {faq.id}
+                                                        </span>
+                                                    )}
+                                                    
+                                                    <button
+                                                        onClick={() => handleDelete(faq.id)}
+                                                        disabled={isLoading}
+                                                        className="delete-btn"
                                                         style={{
-                                                            backgroundColor: theme.colors.primary + '20',
-                                                            color: theme.colors.primary,
-                                                            padding: '0.25rem 0.5rem',
-                                                            borderRadius: '12px',
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: '500'
+                                                            background: 'transparent',
+                                                            border: `1px solid ${theme.colors.error || '#ef4444'}`,
+                                                            color: theme.colors.error || '#ef4444',
+                                                            padding: '0.5rem 1rem',
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.25rem',
+                                                            fontSize: '0.8rem',
+                                                            fontWeight: '500',
+                                                            transition: 'all 0.2s ease',
+                                                            opacity: isLoading ? 0.6 : 1
                                                         }}
+                                                        onMouseEnter={(e) => {
+                                                            if (!isLoading) {
+                                                                e.target.style.backgroundColor = theme.colors.error || '#ef4444';
+                                                                e.target.style.color = 'white';
+                                                            }
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            if (!isLoading) {
+                                                                e.target.style.backgroundColor = 'transparent';
+                                                                e.target.style.color = theme.colors.error || '#ef4444';
+                                                            }
+                                                        }}
+                                                        title="Delete FAQ"
                                                     >
-                                                        <FiTag size={12} style={{ marginRight: '0.25rem' }} />
-                                                        {tag.trim()}
-                                                    </span>
-                                                ))}
+                                                        <FiTrash2 size={14} />
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
-                                        
-                                        {faq.id && (
-                                            <span style={{ 
-                                                color: theme.colors.textSecondary,
-                                                fontSize: '0.8rem',
-                                                fontFamily: 'monospace'
-                                            }}>
-                                                ID: {faq.id}
-                                            </span>
-                                        )}
                                     </div>
-
-                                    {/* Delete Button */}
-                                    <button
-                                        onClick={() => handleDelete(faq.id)}
-                                        disabled={isLoading}
-                                        style={{
-                                            background: 'transparent',
-                                            border: `1px solid ${theme.colors.error || '#ef4444'}`,
-                                            color: theme.colors.error || '#ef4444',
-                                            padding: '0.5rem',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.25rem',
-                                            fontSize: '0.8rem',
-                                            fontWeight: '500',
-                                            transition: 'all 0.2s ease',
-                                            opacity: isLoading ? 0.6 : 1
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            if (!isLoading) {
-                                                e.target.style.backgroundColor = theme.colors.error || '#ef4444';
-                                                e.target.style.color = 'white';
-                                            }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            if (!isLoading) {
-                                                e.target.style.backgroundColor = 'transparent';
-                                                e.target.style.color = theme.colors.error || '#ef4444';
-                                            }
-                                        }}
-                                        title="Delete FAQ"
-                                    >
-                                        <FiTrash2 size={14} />
-                                        Delete
-                                    </button>
-                                </div>
+                                ))}
                             </div>
-                        ))}
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );
