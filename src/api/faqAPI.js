@@ -51,9 +51,9 @@ export const insertFAQ = async (faqData) => {
 export const getAllFAQs = async () => {
     try {
         console.log('Fetching all FAQs');
-        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/all`);
+        console.log('API URL:', `${API_BASE_URL}/nexusai/faqs/all`);
 
-        const response = await fetch(`${API_BASE_URL}/nexusai/faq/all`, {
+        const response = await fetch(`${API_BASE_URL}/nexusai/faqs/all`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
