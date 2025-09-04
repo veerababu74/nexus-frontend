@@ -387,7 +387,7 @@
 
 .grid-header {
     display: grid;
-    grid-template-columns: 1fr 1.5fr 2fr 2fr 1.5fr 1.5fr;
+    grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1.5fr;
     gap: 1rem;
     padding: 1rem;
     font-weight: 600;
@@ -399,7 +399,7 @@
 
 .grid-row {
     display: grid;
-    grid-template-columns: 1fr 1.5fr 2fr 2fr 1.5fr 1.5fr;
+    grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1.5fr;
     gap: 1rem;
     padding: 1rem;
     transition: all 0.3s ease;
@@ -499,7 +499,7 @@
 @media (max-width: 1200px) {
     .grid-header,
     .grid-row {
-        grid-template-columns: 1fr 1.5fr 2fr 2fr 1fr;
+        grid-template-columns: 2fr 2fr 1.5fr 1fr;
     }
     
     .grid-header .grid-cell:nth-child(5),

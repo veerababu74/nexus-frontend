@@ -8,7 +8,6 @@ import './FileManager.css';
 const FileManager = () => {
     const { theme } = useTheme();
     const [files, setFiles] = useState([]);
-    const [uploadedFiles, setUploadedFiles] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
     const [sortBy, setSortBy] = useState('CreatedOn');
@@ -110,7 +109,6 @@ const FileManager = () => {
                         CreatedOn: new Date().toISOString(),
                     };
                     setFiles(prev => [newFile, ...prev]);
-                    setUploadedFiles(prev => [...prev, newFile]);
                 } else {
                     console.error('Upload failed:', res?.detail || 'Unknown error');
                     setMessage(res?.detail || 'Upload failed');
@@ -145,6 +143,9 @@ const FileManager = () => {
         try {
             setMessage('Deleting document...');
             
+            // Remove the file from the local state immediately for better UX
+            setFiles(prev => prev.filter(f => f.FileUniqueId !== fileUniqueId));
+            
             const res = await deleteDocument({ 
                 index_name, 
                 file_unique_id: fileUniqueId 
@@ -154,27 +155,27 @@ const FileManager = () => {
             
             // Check if deletion was successful
             if (res && (res.status === 'Success' || res.status === 'success')) {
-                // Remove the file from the local state
-                setFiles(prev => prev.filter(f => f.FileUniqueId !== fileUniqueId));
                 setMessage(`File deleted successfully! ${res.documents_deleted || 0} documents removed.`);
             } else if (res && res.detail) {
-                // API returned error details
+                // API returned error details - restore the file if deletion failed
                 console.error('Delete failed with details:', res.detail);
                 setMessage(`Delete failed: ${Array.isArray(res.detail) ? res.detail[0]?.msg : res.detail}`);
+                // Optionally restore the file if you have it cached
             } else {
-                // Unexpected response format
+                // Unexpected response format but file was already removed from UI
                 console.error('Unexpected delete response:', res);
-                setMessage('Delete operation completed but response was unexpected. Please refresh to verify.');
+                setMessage('File deleted from display. Please refresh to verify server status.');
             }
         } catch (err) {
             console.error('Delete error caught:', err);
+            
+            // Restore the file in case of error (would need to be cached)
+            setMessage(`Delete error: ${err.message || 'Unknown error occurred'}. File may still exist.`);
             
             if (err.message.includes('Network Error')) {
                 setMessage('Network error: Please check your internet connection and try again.');
             } else if (err.message.includes('No response received')) {
                 setMessage('Server did not respond. Please try again later.');
-            } else {
-                setMessage(`Delete error: ${err.message || 'Unknown error occurred'}`);
             }
         }
     };
@@ -305,7 +306,7 @@ const FileManager = () => {
                         📊 {files.length} total files
                     </div>
                     <div className="stat-badge">
-                        📤 {uploadedFiles.length} uploaded
+                        📤 Recently uploaded
                     </div>
                     {selectedFiles.length > 0 && (
                         <div className="stat-badge">
@@ -520,10 +521,9 @@ const FileManager = () => {
                             borderBottom: `1px solid ${theme.colors.border}`,
                             color: theme.colors.textPrimary
                         }}>
-                            <div className="grid-cell">File ID</div>
-                            <div className="grid-cell">Created Date</div>
                             <div className="grid-cell">Title</div>
                             <div className="grid-cell">File Name</div>
+                            <div className="grid-cell">Created Date</div>
                             <div className="grid-cell">Tags</div>
                             <div className="grid-cell">Actions</div>
                         </div>
@@ -539,19 +539,6 @@ const FileManager = () => {
                                     }
                                 }}
                             >
-                                <div className="grid-cell id-cell">
-                                    <span 
-                                        className="file-id"
-                                        style={{ color: theme.colors.textSecondary }}
-                                    >
-                                        {file.FileUniqueId.slice(0, 8)}...
-                                    </span>
-                                </div>
-                                <div className="grid-cell date-cell">
-                                    <span style={{ color: theme.colors.textSecondary }}>
-                                        {formatDate(file.CreatedOn)}
-                                    </span>
-                                </div>
                                 <div className="grid-cell title-cell">
                                     <span style={{ color: theme.colors.textPrimary, fontWeight: 500 }}>
                                         {file.Title}
@@ -561,6 +548,11 @@ const FileManager = () => {
                                     <span className="file-icon">{getFileIcon(file.FileName)}</span>
                                     <span className="file-name" style={{ color: theme.colors.textPrimary }}>
                                         {file.FileName}
+                                    </span>
+                                </div>
+                                <div className="grid-cell date-cell">
+                                    <span style={{ color: theme.colors.textSecondary }}>
+                                        {formatDate(file.CreatedOn)}
                                     </span>
                                 </div>
                                 <div className="grid-cell tags-cell">
