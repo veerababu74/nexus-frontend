@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { 
   FiMessageCircle, 
@@ -6,15 +6,22 @@ import {
   FiUsers, 
   FiAlertTriangle, 
   FiHelpCircle, 
-  FiClock 
+  FiClock,
+  FiX,
+  FiUser,
+  FiCpu
 } from 'react-icons/fi';
+import { fetchConversations, fetchAnalyticsSummary } from '../../api/analyticsAPI';
 import './Analytics.css';
 
 const Analytics = () => {
   const { theme } = useTheme();
+  const [showConversations, setShowConversations] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const analyticsData = {
-    conversations: 0,
+    conversations: conversations.length,
     selfServePercentage: '0%',
     leads: 0,
     incidents: 0,
@@ -22,14 +29,47 @@ const Analytics = () => {
     busyHours: '— wireframe —'
   };
 
-  const StatCard = ({ icon: Icon, title, value, className = '' }) => (
+  const fetchConversationsData = async () => {
+    setLoading(true);
+    try {
+      const conversationsData = await fetchConversations();
+      setConversations(conversationsData);
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConversationsClick = () => {
+    setShowConversations(true);
+    fetchConversationsData();
+  };
+
+  // Load conversation count on component mount
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const conversationsData = await fetchConversations();
+        setConversations(conversationsData);
+      } catch (error) {
+        console.error('Error fetching initial conversation data:', error);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  const StatCard = ({ icon: Icon, title, value, className = '', onClick }) => (
     <div 
-      className={`stat-card ${className}`}
+      className={`stat-card ${className} ${onClick ? 'stat-card-clickable' : ''}`}
       style={{ 
         backgroundColor: theme.colors.surface,
         border: `1px solid ${theme.colors.border}`,
-        borderRadius: '12px'
+        borderRadius: '12px',
+        cursor: onClick ? 'pointer' : 'default'
       }}
+      onClick={onClick}
     >
       <div className="stat-header">
         <Icon 
@@ -76,6 +116,162 @@ const Analytics = () => {
     </div>
   );
 
+  const ConversationModal = () => (
+    <div 
+      className="conversation-modal-overlay"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+      onClick={() => setShowConversations(false)}
+    >
+      <div 
+        className="conversation-modal"
+        style={{ 
+          backgroundColor: theme.colors.background,
+          border: `1px solid ${theme.colors.border}`
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="conversation-modal-header">
+          <div className="modal-header-content">
+            <h2 style={{ color: theme.colors.textPrimary }}>Conversations</h2>
+            <span 
+              className="conversation-count"
+              style={{ color: theme.colors.textSecondary }}
+            >
+              {conversations.length} session{conversations.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <button 
+            className="close-button"
+            onClick={() => setShowConversations(false)}
+            style={{ 
+              background: 'none',
+              border: 'none',
+              color: theme.colors.textSecondary,
+              cursor: 'pointer'
+            }}
+          >
+            <FiX size={24} />
+          </button>
+        </div>
+        
+        <div className="conversation-modal-content">
+          {loading ? (
+            <div 
+              className="loading-spinner"
+              style={{ color: theme.colors.textSecondary }}
+            >
+              Loading conversations...
+            </div>
+          ) : conversations.length > 0 ? (
+            <div className="conversations-list">
+              {conversations.map((conversation, sessionIndex) => (
+                <div 
+                  key={sessionIndex} 
+                  className="conversation-session"
+                  style={{ 
+                    backgroundColor: theme.colors.surface,
+                    border: `1px solid ${theme.colors.border}`
+                  }}
+                >
+                  <div className="session-header">
+                    <h4 
+                      className="session-title"
+                      style={{ color: theme.colors.textPrimary }}
+                    >
+                      Session {conversation[0]?.UserChatSessionId}
+                    </h4>
+                    {conversation[0]?.Timestamp && (
+                      <span 
+                        className="session-date"
+                        style={{ color: theme.colors.textSecondary }}
+                      >
+                        {new Date(conversation[0].Timestamp).toLocaleDateString([], {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="messages-container">
+                    {conversation.map((message, messageIndex) => (
+                      <div 
+                        key={message.Id} 
+                        className={`message-item ${message.MessageType.toLowerCase()}`}
+                        style={{ 
+                          backgroundColor: message.MessageType === 'User' 
+                            ? theme.colors.primary + '20' 
+                            : theme.colors.surface,
+                          border: `1px solid ${theme.colors.border}`
+                        }}
+                      >
+                        <div className="message-header">
+                          <div className="message-meta">
+                            {message.MessageType === 'User' ? (
+                              <FiUser 
+                                size={16} 
+                                style={{ color: theme.colors.primary }}
+                              />
+                            ) : (
+                              <FiCpu 
+                                size={16} 
+                                style={{ color: theme.colors.secondary }}
+                              />
+                            )}
+                            <span 
+                              className="message-type"
+                              style={{ color: theme.colors.textSecondary }}
+                            >
+                              {message.MessageType}
+                            </span>
+                          </div>
+                          {message.Timestamp && (
+                            <span 
+                              className="message-timestamp"
+                              style={{ color: theme.colors.textSecondary }}
+                            >
+                              {new Date(message.Timestamp).toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
+                          )}
+                        </div>
+                        <p 
+                          className="message-text"
+                          style={{ color: theme.colors.textPrimary }}
+                        >
+                          {message.Message}
+                        </p>
+                        {message.Reaction !== 'None' && (
+                          <span 
+                            className="message-reaction"
+                            style={{ color: theme.colors.textSecondary }}
+                          >
+                            Reaction: {message.Reaction}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div 
+              className="no-conversations"
+              style={{ color: theme.colors.textSecondary }}
+            >
+              <FiMessageCircle size={48} />
+              <p>No conversations found</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="analytics-container">
       <div className="analytics-header">
@@ -95,6 +291,7 @@ const Analytics = () => {
             title="Conversations"
             value={analyticsData.conversations}
             className="stat-conversations"
+            onClick={handleConversationsClick}
           />
           <StatCard
             icon={FiPercent}
@@ -148,6 +345,8 @@ const Analytics = () => {
           />
         </div>
       </div>
+
+      {showConversations && <ConversationModal />}
     </div>
   );
 };
