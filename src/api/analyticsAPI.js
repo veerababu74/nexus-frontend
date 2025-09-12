@@ -1,50 +1,9 @@
 // Analytics API service for handling all analytics-related API calls
 
-const API_BASE_URL = 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
-
-// Demo data for testing when API is not available
-const demoData = [
-    {
-        "Id": "4",
-        "UserChatSessionId": "1",
-        "MessageType": "User",
-        "Message": "Who are you",
-        "Reaction": "None",
-        "Timestamp": "2025-09-11T10:30:00Z"
-    },
-    {
-        "Id": "5",
-        "UserChatSessionId": "1",
-        "MessageType": "Assistant",
-        "Message": "I am doctor Deepak, how can I assist you",
-        "Reaction": "None",
-        "Timestamp": "2025-09-11T10:30:15Z"
-    },
-    {
-        "Id": "6",
-        "UserChatSessionId": "2",
-        "MessageType": "User",
-        "Message": "What are your hours?",
-        "Reaction": "None",
-        "Timestamp": "2025-09-11T14:15:00Z"
-    },
-    {
-        "Id": "7",
-        "UserChatSessionId": "2",
-        "MessageType": "Assistant",
-        "Message": "I'm available 24/7 to help you with your medical questions.",
-        "Reaction": "None",
-        "Timestamp": "2025-09-11T14:15:10Z"
-    },
-    {
-        "Id": "8",
-        "UserChatSessionId": "2",
-        "MessageType": "User",
-        "Message": "Thank you!",
-        "Reaction": "None",
-        "Timestamp": "2025-09-11T14:15:20Z"
-    }
-];
+// Use proxy in development, direct URL in production
+const API_BASE_URL = import.meta.env.DEV 
+    ? '/api' 
+    : 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
 
 /**
  * Fetch all conversation messages
@@ -52,9 +11,7 @@ const demoData = [
  */
 export const fetchConversationMessages = async () => {
     try {
-        // Note: Update this endpoint to the correct API endpoint when available
-        // Currently using the provided URL, but it should be something like '/api/conversations'
-        const response = await fetch(`${API_BASE_URL}/api/conversations`);
+        const response = await fetch(`${API_BASE_URL}/UserChatHistory/All`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -63,9 +20,8 @@ export const fetchConversationMessages = async () => {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error fetching conversation messages, using demo data:', error);
-        // Return demo data for testing purposes when API is not available
-        return demoData;
+        console.error('Error fetching conversation messages:', error);
+        throw error;
     }
 };
 

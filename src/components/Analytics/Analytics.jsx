@@ -11,6 +11,7 @@ import {
   FiUser,
   FiCpu
 } from 'react-icons/fi';
+import { ClipLoader } from 'react-spinners';
 import { fetchConversations, fetchAnalyticsSummary } from '../../api/analyticsAPI';
 import './Analytics.css';
 
@@ -19,6 +20,7 @@ const Analytics = () => {
   const [showConversations, setShowConversations] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const analyticsData = {
     conversations: conversations.length,
@@ -31,11 +33,14 @@ const Analytics = () => {
 
   const fetchConversationsData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const conversationsData = await fetchConversations();
       setConversations(conversationsData);
     } catch (error) {
       console.error('Error fetching conversations:', error);
+      setError('Failed to load conversations. Please try again.');
+      setConversations([]);
     } finally {
       setLoading(false);
     }
@@ -54,6 +59,7 @@ const Analytics = () => {
         setConversations(conversationsData);
       } catch (error) {
         console.error('Error fetching initial conversation data:', error);
+        setConversations([]);
       }
     };
 
@@ -154,13 +160,62 @@ const Analytics = () => {
           </button>
         </div>
         
-        <div className="conversation-modal-content">
-          {loading ? (
+        <div className="conversation-modal-content" style={{ position: 'relative' }}>
+          {loading && (
             <div 
-              className="loading-spinner"
+              className="loading-overlay"
+              style={{ 
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10
+              }}
+            >
+              <ClipLoader
+                color={theme.colors.primary}
+                loading={loading}
+                size={50}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+              <p style={{ 
+                marginTop: '1rem', 
+                textAlign: 'center',
+                color: theme.colors.textPrimary,
+                fontSize: '1rem'
+              }}>
+                Loading conversations...
+              </p>
+            </div>
+          )}
+          {error ? (
+            <div 
+              className="error-message"
               style={{ color: theme.colors.textSecondary }}
             >
-              Loading conversations...
+              <FiAlertTriangle size={48} />
+              <p>{error}</p>
+              <button 
+                onClick={fetchConversationsData}
+                className="retry-button"
+                style={{ 
+                  backgroundColor: theme.colors.primary,
+                  color: theme.colors.onPrimary,
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                Retry
+              </button>
             </div>
           ) : conversations.length > 0 ? (
             <div className="conversations-list">

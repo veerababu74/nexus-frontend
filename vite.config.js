@@ -13,5 +13,15 @@ export default defineConfig({
       }
     }
   },
-  base: './'
+  base: './',
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })
