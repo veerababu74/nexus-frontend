@@ -16,7 +16,7 @@ export const insertFAQ = async (faqData) => {
 
         // Map the field names to match API expectations
         const apiData = {
-            title: faqData.question,
+            question: faqData.question,
             answer: faqData.answer,
             tags: faqData.tags
         };
