@@ -13,8 +13,8 @@ export const fetchImprovedChatResponse = async (message) => {
     try {
         const requestPayload = {
             message: message,
-            session_id: "veera1234", // Static as requested
-            index_name: "veera" // Static as requested
+            session_id: "test1234", // Static as requested
+            index_name: "test" // Static as requested
         };
 
         const response = await fetch(`${API_BASE_URL}/nexus/ai/v3/chat`, {
@@ -42,7 +42,7 @@ export const fetchImprovedChatResponse = async (message) => {
  * @param {string} sessionId - Session ID
  * @returns {Promise<Object>} - Session information
  */
-export const getImprovedChatSession = async (sessionId = "veera1234") => {
+export const getImprovedChatSession = async (sessionId = "test1234") => {
     try {
         const response = await fetch(`${API_BASE_URL}/improved-chat/session/${sessionId}`, {
             method: 'GET',
@@ -68,7 +68,7 @@ export const getImprovedChatSession = async (sessionId = "veera1234") => {
  * @param {string} sessionId - Session ID to clear
  * @returns {Promise<boolean>} - Success status
  */
-export const clearImprovedChatSession = async (sessionId = "veera1234") => {
+export const clearImprovedChatSession = async (sessionId = "test1234") => {
     try {
         const response = await fetch(`${API_BASE_URL}/improved-chat/session/${sessionId}/clear`, {
             method: 'DELETE',

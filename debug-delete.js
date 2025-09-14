@@ -8,7 +8,7 @@ const testDeleteAPI = async () => {
     
     // Replace with actual values for testing
     const testData = {
-        index_name: 'veera',
+        index_name: 'test',
         file_unique_id: 'YOUR_FILE_ID_HERE' // Replace with actual file ID
     };
     

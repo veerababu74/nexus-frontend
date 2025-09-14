@@ -13,8 +13,8 @@ const ImprovedChat = () => {
     const [error, setError] = useState('');
     const [sessionStats, setSessionStats] = useState({
         messagesCount: 0,
-        session: 'veera1234',
-        index: 'veera'
+        session: 'test1234',
+        index: 'test'
     });
     const [messageReactions, setMessageReactions] = useState({});
     const messagesEndRef = useRef(null);
@@ -56,7 +56,7 @@ const ImprovedChat = () => {
                 timestamp: new Date().toISOString(),
                 responseData: aiResponse,
                 messageId: aiResponse.message_id || `msg_${Date.now()}`,
-                sessionId: aiResponse.session_id || 'veera1234'
+                sessionId: aiResponse.session_id || 'test1234'
             };
 
             setChatLog(prev => [...prev, aiMessage]);

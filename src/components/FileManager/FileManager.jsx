@@ -83,7 +83,7 @@ const FileManager = () => {
                 progress[fileId] = 0;
                 setUploadProgress({ ...progress });
                 
-                const index_name = 'veera';
+                const index_name = 'test';
                 const tag = undefined;
                 
                 // Simulate progress
@@ -101,8 +101,8 @@ const FileManager = () => {
                 if (res?.res?.knowledge_api?.success) {
                     const doc = res.res.knowledge_api.response;
                     const newFile = {
-                        Title: doc.FileName ? doc.FileName.split('.')[0] : file.name.split('.')[0],
-                        FileName: doc.FileName || file.name,
+                        Title: file.name.split('.')[0],
+                        FileName: file.name,
                         Hyperlink: doc.BlobUrl || '#',
                         Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : ['uploaded'],
                         FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
@@ -137,7 +137,7 @@ const FileManager = () => {
             return;
         }
 
-        const index_name = 'veera';
+        const index_name = 'test';
         console.log('Starting delete process for file:', fileUniqueId);
         
         try {

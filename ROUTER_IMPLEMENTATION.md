@@ -76,8 +76,8 @@ src/
 ```json
 Request: {
   "message": "user input",
-  "session_id": "veera1234",
-  "index_name": "veera"
+  "session_id": "test1234",
+  "index_name": "test"
 }
 
 Response: {

@@ -56,8 +56,8 @@ VITE_API_BASE_URL=http://localhost:8000
 ```json
 {
   "message": "string",
-  "session_id": "veera1234",
-  "index_name": "veera"
+  "session_id": "test1234",
+  "index_name": "test"
 }
 ```
 - **Response**: Enhanced response with analytics data

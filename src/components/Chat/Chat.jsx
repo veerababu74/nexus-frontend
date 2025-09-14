@@ -13,8 +13,8 @@ const Chat = () => {
     const [error, setError] = useState('');
     const [sessionStats, setSessionStats] = useState({
         messagesCount: 0,
-        session: 'veera1234',
-        index: 'veera'
+        session: 'test1234',
+        index: 'test'
     });
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
@@ -41,7 +41,7 @@ const Chat = () => {
         setError('');
 
         const requestPayload = {
-            "index": "veera",
+            "index": "test",
             "query": currentQuery,
             "history": []
         };
