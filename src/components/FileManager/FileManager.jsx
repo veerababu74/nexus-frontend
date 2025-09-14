@@ -521,7 +521,6 @@ const FileManager = () => {
                             borderBottom: `1px solid ${theme.colors.border}`,
                             color: theme.colors.textPrimary
                         }}>
-                            <div className="grid-cell">Title</div>
                             <div className="grid-cell">File Name</div>
                             <div className="grid-cell">Created Date</div>
                             <div className="grid-cell">Tags</div>
@@ -539,11 +538,6 @@ const FileManager = () => {
                                     }
                                 }}
                             >
-                                <div className="grid-cell title-cell">
-                                    <span style={{ color: theme.colors.textPrimary, fontWeight: 500 }}>
-                                        {file.Title}
-                                    </span>
-                                </div>
                                 <div className="grid-cell file-info">
                                     <span className="file-icon">{getFileIcon(file.FileName)}</span>
                                     <span className="file-name" style={{ color: theme.colors.textPrimary }}>

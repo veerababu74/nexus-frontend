@@ -387,7 +387,7 @@
 
 .grid-header {
     display: grid;
-    grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1.5fr;
+    grid-template-columns: 2fr 2fr 1.5fr 1.5fr;
     gap: 1rem;
     padding: 1rem;
     font-weight: 600;
@@ -395,14 +395,18 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .grid-row {
     display: grid;
-    grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1.5fr;
+    grid-template-columns: 2fr 2fr 1.5fr 1.5fr;
     gap: 1rem;
     padding: 1rem;
     transition: all 0.3s ease;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .grid-row:hover {
@@ -415,6 +419,8 @@
     align-items: center;
     font-size: 0.9rem;
     overflow: hidden;
+    padding: 0.25rem;
+    justify-content: flex-start;
 }
 
 .id-cell {
@@ -500,11 +506,7 @@
     .grid-header,
     .grid-row {
         grid-template-columns: 2fr 2fr 1.5fr 1fr;
-    }
-    
-    .grid-header .grid-cell:nth-child(5),
-    .grid-row .grid-cell:nth-child(5) {
-        display: none;
+        gap: 0.75rem;
     }
 }
 
@@ -578,7 +580,7 @@
     
     .grid-header,
     .grid-row {
-        grid-template-columns: 2fr 2fr 1.5fr;
+        grid-template-columns: 2fr 1.5fr 1fr;
         gap: 0.5rem;
     }
     

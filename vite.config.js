@@ -21,6 +21,18 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/nexusai': {
+        target: 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path
+      },
+      '/nexus': {
+        target: 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path
       }
     }
   }

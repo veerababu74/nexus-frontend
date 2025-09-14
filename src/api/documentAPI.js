@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
+// Use proxy in development, direct URL in production
+const API_BASE_URL = import.meta.env.DEV 
+    ? '' 
+    : 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
 
 export const uploadDocument = async ({ file, index_name, tag }) => {
     const formData = new FormData();

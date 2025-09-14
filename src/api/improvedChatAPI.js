@@ -1,5 +1,8 @@
 // Improved Chat API service for enhanced chat functionality
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
+// Use proxy in development, direct URL in production
+const API_BASE_URL = import.meta.env.DEV 
+    ? '' 
+    : (import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net');
 
 /**
  * Fetch improved chat response from the backend
@@ -78,5 +81,40 @@ export const clearImprovedChatSession = async (sessionId = "veera1234") => {
     } catch (error) {
         console.error('Error clearing improved chat session:', error);
         return false;
+    }
+};
+
+/**
+ * Save user reaction to a chatbot response
+ * @param {string} sessionId - Session ID
+ * @param {string} messageId - Message ID to react to
+ * @param {boolean|null} reaction - true for like, false for dislike, null for no reaction
+ * @returns {Promise<Object>} - The API response
+ */
+export const saveReaction = async (sessionId, messageId, reaction) => {
+    try {
+        const requestPayload = {
+            session_id: sessionId,
+            message_id: messageId,
+            reaction: reaction
+        };
+
+        const response = await fetch(`${API_BASE_URL}/nexus/ai/v3/chat/reaction`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestPayload),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error saving reaction:', error);
+        throw new Error('Failed to save reaction. Please try again.');
     }
 };

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './Chat.css'; // Use the same CSS as regular chat
 import './ImprovedChat.css'; // Additional enhanced styles
 import ChatHeader from '../ChatHeader/ChatHeader';
-import { fetchImprovedChatResponse, clearImprovedChatSession } from '../../api/improvedChatAPI';
+import { fetchImprovedChatResponse, clearImprovedChatSession, saveReaction } from '../../api/improvedChatAPI';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const ImprovedChat = () => {
@@ -16,6 +16,7 @@ const ImprovedChat = () => {
         session: 'veera1234',
         index: 'veera'
     });
+    const [messageReactions, setMessageReactions] = useState({});
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -53,7 +54,9 @@ const ImprovedChat = () => {
                 role: 'ai',
                 content: aiResponse.message || 'No response received',
                 timestamp: new Date().toISOString(),
-                responseData: aiResponse
+                responseData: aiResponse,
+                messageId: aiResponse.message_id || `msg_${Date.now()}`,
+                sessionId: aiResponse.session_id || 'veera1234'
             };
 
             setChatLog(prev => [...prev, aiMessage]);
@@ -85,12 +88,34 @@ const ImprovedChat = () => {
             if (success) {
                 setChatLog([]);
                 setSessionStats(prev => ({ ...prev, messagesCount: 0 }));
+                setMessageReactions({});
                 setError('');
             } else {
                 setError('Failed to clear chat session');
             }
         } catch (error) {
             setError('Failed to clear chat session');
+        }
+    };
+
+    const handleReaction = async (messageId, sessionId, reaction) => {
+        try {
+            // Update local state immediately for better UX
+            setMessageReactions(prev => ({
+                ...prev,
+                [messageId]: reaction
+            }));
+
+            // Save reaction to backend
+            await saveReaction(sessionId, messageId, reaction);
+        } catch (error) {
+            console.error('Error saving reaction:', error);
+            // Revert local state on error
+            setMessageReactions(prev => ({
+                ...prev,
+                [messageId]: prev[messageId] // Revert to previous state
+            }));
+            setError('Failed to save reaction. Please try again.');
         }
     };
 
@@ -207,6 +232,24 @@ const ImprovedChat = () => {
                                 {msg.content}
                             </div>
                             {msg.role === 'ai' && renderResponseDetails(msg.responseData)}
+                            {msg.role === 'ai' && msg.messageId && (
+                                <div className="message-reactions">
+                                    <button
+                                        className={`reaction-btn like-btn ${messageReactions[msg.messageId] === true ? 'active' : ''}`}
+                                        onClick={() => handleReaction(msg.messageId, msg.sessionId, messageReactions[msg.messageId] === true ? null : true)}
+                                        title="Like this response"
+                                    >
+                                        👍
+                                    </button>
+                                    <button
+                                        className={`reaction-btn dislike-btn ${messageReactions[msg.messageId] === false ? 'active' : ''}`}
+                                        onClick={() => handleReaction(msg.messageId, msg.sessionId, messageReactions[msg.messageId] === false ? null : false)}
+                                        title="Dislike this response"
+                                    >
+                                        👎
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}

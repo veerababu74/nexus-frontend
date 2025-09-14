@@ -318,3 +318,83 @@
         justify-content: flex-start;
     }
 }
+
+/* Message Reactions */
+.message-reactions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    justify-content: flex-start;
+}
+
+.reaction-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 32px;
+}
+
+.reaction-btn:hover {
+    background: var(--background);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reaction-btn.active {
+    background: var(--primary);
+    color: var(--on-primary);
+    border-color: var(--primary);
+}
+
+.reaction-btn.like-btn.active {
+    background: #42b883;
+    border-color: #42b883;
+}
+
+.reaction-btn.dislike-btn.active {
+    background: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.reaction-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Dark theme adjustments for reactions */
+[data-theme="dark"] .reaction-btn {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .reaction-btn:hover {
+    background: var(--background);
+}
+
+/* Animation for reaction feedback */
+.reaction-btn.active {
+    animation: reactionPulse 0.3s ease-out;
+}
+
+@keyframes reactionPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

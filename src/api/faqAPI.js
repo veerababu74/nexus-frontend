@@ -1,5 +1,8 @@
 // FAQ API service for handling all FAQ-related API calls
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
+// Use proxy in development, direct URL in production
+const API_BASE_URL = import.meta.env.DEV 
+    ? '' 
+    : (import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net');
 
 /**
  * Insert a new FAQ record
@@ -78,7 +81,7 @@ export const getAllFAQs = async () => {
 
         // Map the API response to match the expected format
         const faqs = (data.response || []).map(faq => ({
-            id: faq.Id,
+            id: faq.FaqUniqueId,
             question: faq.Title,
             answer: faq.Answer,
             tags: faq.Tags
@@ -94,19 +97,22 @@ export const getAllFAQs = async () => {
 
 /**
  * Delete a specific FAQ record by ID
- * @param {string} id - The ID of the FAQ to delete
+ * @param {string} id - The FAQ unique ID to delete
  * @returns {Promise<Object>} - The API response
  */
 export const deleteFAQ = async (id) => {
     try {
-        console.log('Deleting FAQ with ID:', id);
-        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/delete?id=${id}`);
+        console.log('Deleting FAQ with unique ID:', id);
+        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/delete`);
 
-        const response = await fetch(`${API_BASE_URL}/nexusai/faq/delete?id=${id}`, {
+        const response = await fetch(`${API_BASE_URL}/nexusai/faq/delete`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+                faq_unique_id: id
+            }),
         });
 
         console.log('Delete FAQ response status:', response.status);
