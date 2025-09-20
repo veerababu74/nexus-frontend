@@ -253,7 +253,7 @@ const Analytics = () => {
                     {conversation.map((message, messageIndex) => (
                       <div 
                         key={message.Id} 
-                        className={`message-item ${message.MessageType.toLowerCase()}`}
+                        className={`message-item ${message.MessageType?.toLowerCase() || 'unknown'}`}
                         style={{ 
                           backgroundColor: message.MessageType === 'User' 
                             ? theme.colors.primary + '20' 
@@ -278,7 +278,7 @@ const Analytics = () => {
                               className="message-type"
                               style={{ color: theme.colors.textSecondary }}
                             >
-                              {message.MessageType}
+                              {message.MessageType || 'Unknown'}
                             </span>
                           </div>
                           {message.Timestamp && (

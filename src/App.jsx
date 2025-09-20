@@ -11,29 +11,71 @@ import SettingsPage from './pages/SettingsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import PublishingPage from './pages/PublishingPage';
 import LeadsLogsPage from './pages/LeadsLogsPage';
+import NSXAdminPage from './pages/NSXAdminPage';
 import './App.css';
 
 const App = () => {
   return (
     <ThemeProvider>
       <Router>
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/regular" element={<RegularChatPage />} />
-            <Route path="/improved" element={<ImprovedChatPage />} />
-            <Route path="/knowledge" element={<KnowledgePage />} />
-            <Route path="/tone-safety" element={<ToneSafetyPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/publishing" element={<PublishingPage />} />
-            <Route path="/leads-logs" element={<LeadsLogsPage />} />
-            <Route path="/faq" element={<Navigate to="/knowledge" replace />} />
-            <Route path="/files" element={<Navigate to="/knowledge" replace />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </MainLayout>
+        <Routes>
+          {/* Main app routes - with MainLayout */}
+          <Route path="/" element={
+            <MainLayout>
+              <HomePage />
+            </MainLayout>
+          } />
+          <Route path="/home" element={
+            <MainLayout>
+              <HomePage />
+            </MainLayout>
+          } />
+          <Route path="/regular" element={
+            <MainLayout>
+              <RegularChatPage />
+            </MainLayout>
+          } />
+          <Route path="/improved" element={
+            <MainLayout>
+              <ImprovedChatPage />
+            </MainLayout>
+          } />
+          <Route path="/knowledge" element={
+            <MainLayout>
+              <KnowledgePage />
+            </MainLayout>
+          } />
+          <Route path="/tone-safety" element={
+            <MainLayout>
+              <ToneSafetyPage />
+            </MainLayout>
+          } />
+          <Route path="/settings" element={
+            <MainLayout>
+              <SettingsPage />
+            </MainLayout>
+          } />
+          <Route path="/analytics" element={
+            <MainLayout>
+              <AnalyticsPage />
+            </MainLayout>
+          } />
+          <Route path="/publishing" element={
+            <MainLayout>
+              <PublishingPage />
+            </MainLayout>
+          } />
+          <Route path="/leads-logs" element={
+            <MainLayout>
+              <LeadsLogsPage />
+            </MainLayout>
+          } />
+          <Route path="/faq" element={<Navigate to="/knowledge" replace />} />
+          <Route path="/files" element={<Navigate to="/knowledge" replace />} />
+          
+          {/* Admin routes - standalone layout for 404/not found */}
+          <Route path="*" element={<NSXAdminPage />} />
+        </Routes>
       </Router>
     </ThemeProvider>
   );

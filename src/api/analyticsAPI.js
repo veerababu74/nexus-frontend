@@ -26,6 +26,43 @@ export const fetchConversationMessages = async () => {
 };
 
 /**
+ * Transform API response to individual messages with MessageType
+ * @param {Array} apiData - Array of conversation records from API
+ * @returns {Array} - Array of individual message objects
+ */
+export const transformApiDataToMessages = (apiData) => {
+    const messages = [];
+    
+    apiData.forEach(record => {
+        // Create user message
+        if (record.UserMessage) {
+            messages.push({
+                Id: `${record.Id}_user`,
+                UserChatSessionId: record.UserChatSessionId,
+                MessageType: 'User',
+                Message: record.UserMessage,
+                Timestamp: record.CreatedOn,
+                Reaction: 'None'
+            });
+        }
+        
+        // Create AI message
+        if (record.AIMessage) {
+            messages.push({
+                Id: `${record.Id}_ai`,
+                UserChatSessionId: record.UserChatSessionId,
+                MessageType: 'Assistant',
+                Message: record.AIMessage,
+                Timestamp: record.CreatedOn,
+                Reaction: record.Reaction || 'None'
+            });
+        }
+    });
+    
+    return messages;
+};
+
+/**
  * Group conversation messages by session ID
  * @param {Array} messages - Array of message objects
  * @returns {Array} - Array of grouped conversations
@@ -42,7 +79,15 @@ export const groupMessagesBySession = (messages) => {
 
     // Sort messages within each session by ID to maintain order
     Object.keys(groupedConversations).forEach(sessionId => {
-        groupedConversations[sessionId].sort((a, b) => parseInt(a.Id) - parseInt(b.Id));
+        groupedConversations[sessionId].sort((a, b) => {
+            const aId = parseInt(a.Id.split('_')[0]);
+            const bId = parseInt(b.Id.split('_')[0]);
+            if (aId === bId) {
+                // If same record ID, user message comes before AI message
+                return a.MessageType === 'User' ? -1 : 1;
+            }
+            return aId - bId;
+        });
     });
 
     return Object.values(groupedConversations);
@@ -54,8 +99,9 @@ export const groupMessagesBySession = (messages) => {
  */
 export const fetchConversations = async () => {
     try {
-        const messages = await fetchConversationMessages();
-        const groupedConversations = groupMessagesBySession(messages);
+        const apiData = await fetchConversationMessages();
+        const transformedMessages = transformApiDataToMessages(apiData);
+        const groupedConversations = groupMessagesBySession(transformedMessages);
         return groupedConversations;
     } catch (error) {
         console.error('Error processing conversations:', error);
