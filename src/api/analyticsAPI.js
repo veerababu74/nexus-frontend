@@ -1,9 +1,13 @@
 // Analytics API service for handling all analytics-related API calls
+import { api, setApiBaseUrl } from '../utils/apiClient';
 
-// Use proxy in development, direct URL in production
+// Set the base URL for the API client
 const API_BASE_URL = import.meta.env.DEV 
     ? '/api' 
     : 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
+
+// Configure the API client with the base URL
+setApiBaseUrl(API_BASE_URL);
 
 /**
  * Fetch all conversation messages
@@ -11,14 +15,8 @@ const API_BASE_URL = import.meta.env.DEV
  */
 export const fetchConversationMessages = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/UserChatHistory/All`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return data;
+        const response = await api.get('/UserChatHistory/All');
+        return response.data;
     } catch (error) {
         console.error('Error fetching conversation messages:', error);
         throw error;

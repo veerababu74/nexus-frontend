@@ -196,30 +196,124 @@
 
 /* Footer */
 .sidebar-footer {
-  padding: 20px;
+  padding: 16px 20px;
   border-top: 1px solid var(--border-color);
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.theme-toggle {
+/* User Info Mini */
+.user-info-mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+
+.user-avatar-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-details-mini {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.user-name-mini {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email-mini {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* Footer Buttons */
+.footer-button {
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 12px 0;
+  padding: 10px 0;
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
   border-radius: 6px;
+  text-align: left;
 }
 
-.theme-toggle:hover {
-  color: black;
+.footer-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(2px);
 }
 
-[data-theme="dark"] .theme-toggle:hover {
-  color: white;
+.footer-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer-button svg {
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.sidebar.collapsed .footer-button svg {
+  margin-right: 0;
+}
+
+.footer-button-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  text-align: left;
+}
+
+.sidebar.collapsed .footer-button-label {
+  opacity: 0;
+  width: 0;
+}
+
+/* Logout Button Specific Styles */
+.logout-button:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626 !important;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .footer-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .logout-button:hover {
+  background: rgba(239, 68, 68, 0.2);
 }
 
 .collapse-btn:hover {
@@ -229,29 +323,6 @@
 
 [data-theme="dark"] .collapse-btn:hover {
   color: white;
-}
-
-.theme-toggle svg {
-  flex-shrink: 0;
-  margin-right: 12px;
-}
-
-.sidebar.collapsed .theme-toggle svg {
-  margin-right: 0;
-}
-
-.theme-label {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  opacity: 1;
-  transition: opacity 0.2s ease;
-  text-align: left;
-}
-
-.sidebar.collapsed .theme-label {
-  opacity: 0;
-  width: 0;
 }
 
 /* Scrollbar Styles */

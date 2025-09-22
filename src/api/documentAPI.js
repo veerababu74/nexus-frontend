@@ -1,21 +1,23 @@
-import axios from 'axios';
+import { api, setApiBaseUrl } from '../utils/apiClient';
 
 // Use proxy in development, direct URL in production
 const API_BASE_URL = import.meta.env.DEV 
     ? '' 
     : 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
 
+// Configure the API client with the base URL if not in development
+if (!import.meta.env.DEV) {
+    setApiBaseUrl(API_BASE_URL);
+}
+
 export const uploadDocument = async ({ file, index_name, tag }) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('index_name', index_name);
     if (tag) formData.append('tag', tag);
+    
     try {
-        const response = await axios.post(`${API_BASE_URL}/nexusai/upload_document`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await api.upload('/nexusai/upload_document', formData);
         return response.data;
     } catch (error) {
         if (error.response) {
@@ -28,7 +30,6 @@ export const uploadDocument = async ({ file, index_name, tag }) => {
 export const deleteDocument = async ({ index_name, file_unique_id }) => {
     try {
         console.log('Deleting document with params:', { index_name, file_unique_id });
-        console.log('API URL:', `${API_BASE_URL}/nexusai/delete_document`);
 
         const requestBody = { 
             index_name, 
@@ -36,36 +37,14 @@ export const deleteDocument = async ({ index_name, file_unique_id }) => {
         };
         console.log('Request body:', requestBody);
 
-        // Try with fetch first as alternative to axios
-        const fetchResponse = await fetch(`${API_BASE_URL}/nexusai/delete_document`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
+        const response = await api.delete('/nexusai/delete_document', {
+            data: requestBody
         });
 
-        console.log('Delete response status:', fetchResponse.status);
-        console.log('Delete response ok:', fetchResponse.ok);
+        console.log('Delete response status:', response.status);
+        console.log('Delete response data:', response.data);
 
-        const responseText = await fetchResponse.text();
-        console.log('Raw response text:', responseText);
-
-        let responseData;
-        try {
-            responseData = JSON.parse(responseText);
-        } catch (parseError) {
-            console.error('Failed to parse response as JSON:', parseError);
-            responseData = responseText;
-        }
-
-        console.log('Parsed response data:', responseData);
-
-        if (!fetchResponse.ok) {
-            throw new Error(`HTTP ${fetchResponse.status}: ${fetchResponse.statusText}`);
-        }
-
-        return responseData;
+        return response.data;
 
     } catch (error) {
         console.error('Delete document error details:', {
@@ -80,7 +59,7 @@ export const deleteDocument = async ({ index_name, file_unique_id }) => {
 
 export const getAllKnowledgeRecords = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/nexusai/knowledge/all`);
+        const response = await api.get('/nexusai/knowledge/all');
         return response.data;
     } catch (error) {
         if (error.response) {

@@ -1,8 +1,15 @@
 // Improved Chat API service for enhanced chat functionality
+import { api, setApiBaseUrl } from '../utils/apiClient';
+
 // Use proxy in development, direct URL in production
 const API_BASE_URL = import.meta.env.DEV 
     ? '' 
     : (import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net');
+
+// Configure the API client with the base URL if not in development
+if (!import.meta.env.DEV) {
+    setApiBaseUrl(API_BASE_URL);
+}
 
 /**
  * Fetch improved chat response from the backend
@@ -17,20 +24,8 @@ export const fetchImprovedChatResponse = async (message) => {
             index_name: "test" // Static as requested
         };
 
-        const response = await fetch(`${API_BASE_URL}/nexus/ai/v3/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestPayload),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        const response = await api.post('/nexus/ai/v3/chat', requestPayload);
+        return response.data;
     } catch (error) {
         console.error('Error fetching improved chat response:', error);
         throw new Error('Failed to get AI response. Please try again.');
@@ -44,19 +39,8 @@ export const fetchImprovedChatResponse = async (message) => {
  */
 export const getImprovedChatSession = async (sessionId = "test1234") => {
     try {
-        const response = await fetch(`${API_BASE_URL}/improved-chat/session/${sessionId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        const response = await api.get(`/improved-chat/session/${sessionId}`);
+        return response.data;
     } catch (error) {
         console.error('Error fetching session info:', error);
         return null;
@@ -70,14 +54,8 @@ export const getImprovedChatSession = async (sessionId = "test1234") => {
  */
 export const clearImprovedChatSession = async (sessionId = "test1234") => {
     try {
-        const response = await fetch(`${API_BASE_URL}/improved-chat/session/${sessionId}/clear`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        return response.ok;
+        const response = await api.delete(`/improved-chat/session/${sessionId}/clear`);
+        return response.status === 200;
     } catch (error) {
         console.error('Error clearing improved chat session:', error);
         return false;
@@ -99,20 +77,8 @@ export const saveReaction = async (sessionId, messageId, reaction) => {
             reaction: reaction
         };
 
-        const response = await fetch(`${API_BASE_URL}/nexus/ai/v3/chat/reaction`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestPayload),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        const response = await api.post('/nexus/ai/v3/chat/reaction', requestPayload);
+        return response.data;
     } catch (error) {
         console.error('Error saving reaction:', error);
         throw new Error('Failed to save reaction. Please try again.');

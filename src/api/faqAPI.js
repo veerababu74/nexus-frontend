@@ -1,8 +1,15 @@
 // FAQ API service for handling all FAQ-related API calls
+import { api, setApiBaseUrl } from '../utils/apiClient';
+
 // Use proxy in development, direct URL in production
 const API_BASE_URL = import.meta.env.DEV 
     ? '' 
     : (import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net');
+
+// Configure the API client with the base URL if not in development
+if (!import.meta.env.DEV) {
+    setApiBaseUrl(API_BASE_URL);
+}
 
 /**
  * Insert a new FAQ record
@@ -12,7 +19,6 @@ const API_BASE_URL = import.meta.env.DEV
 export const insertFAQ = async (faqData) => {
     try {
         console.log('Inserting FAQ with data:', faqData);
-        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/insert`);
 
         // Map the field names to match API expectations
         const apiData = {
@@ -21,26 +27,12 @@ export const insertFAQ = async (faqData) => {
             tags: faqData.tags
         };
 
-        const response = await fetch(`${API_BASE_URL}/nexusai/faq/insert`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(apiData),
-        });
+        const response = await api.post('/nexusai/faq/insert', apiData);
 
         console.log('Insert FAQ response status:', response.status);
+        console.log('Insert FAQ response data:', response.data);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.log('Error response body:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Insert FAQ response data:', data);
-
-        return data;
+        return response.data;
     } catch (error) {
         console.error('Error inserting FAQ:', error);
         throw new Error('Failed to insert FAQ. Please try again.');
@@ -54,25 +46,13 @@ export const insertFAQ = async (faqData) => {
 export const getAllFAQs = async () => {
     try {
         console.log('Fetching all FAQs');
-        console.log('API URL:', `${API_BASE_URL}/nexusai/faqs/all`);
 
-        const response = await fetch(`${API_BASE_URL}/nexusai/faqs/all`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await api.get('/nexusai/faqs/all');
 
         console.log('Get all FAQs response status:', response.status);
+        console.log('Get all FAQs response data:', response.data);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.log('Error response body:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Get all FAQs response data:', data);
+        const data = response.data;
 
         // Check if the API returned success
         if (!data.success) {
@@ -103,30 +83,17 @@ export const getAllFAQs = async () => {
 export const deleteFAQ = async (id) => {
     try {
         console.log('Deleting FAQ with unique ID:', id);
-        console.log('API URL:', `${API_BASE_URL}/nexusai/faq/delete`);
 
-        const response = await fetch(`${API_BASE_URL}/nexusai/faq/delete`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        const response = await api.delete('/nexusai/faq/delete', {
+            data: {
                 faq_unique_id: id
-            }),
+            }
         });
 
         console.log('Delete FAQ response status:', response.status);
+        console.log('Delete FAQ response data:', response.data);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.log('Error response body:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Delete FAQ response data:', data);
-
-        return data;
+        return response.data;
     } catch (error) {
         console.error('Error deleting FAQ:', error);
         throw new Error('Failed to delete FAQ. Please try again.');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   FiHome, 
   FiMessageCircle, 
@@ -15,14 +16,17 @@ import {
   FiShield,
   FiBarChart,
   FiGlobe,
-  FiFileText
+  FiFileText,
+  FiLogOut
 } from 'react-icons/fi';
 import './Sidebar.css';
 
 const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { isDarkMode, toggleTheme, theme } = useTheme();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -103,6 +107,18 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
   const handleNavigation = (path) => {
     navigate(path);
     setIsMobileOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+      // Logout function will redirect to login automatically
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const isActiveRoute = (path) => {
@@ -209,10 +225,26 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
           })}
         </nav>
 
-        {/* Theme Toggle */}
+        {/* Sidebar Footer */}
         <div className="sidebar-footer">
+          {/* User Info */}
+          {expanded && user && (
+            <div className="user-info-mini" style={{ color: theme.colors.textPrimary }}>
+              <div className="user-avatar-mini">
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div className="user-details-mini">
+                <div className="user-name-mini">{user.name}</div>
+                <div className="user-email-mini" style={{ color: theme.colors.textSecondary }}>
+                  {user.email}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Theme Toggle */}
           <button
-            className="theme-toggle"
+            className="footer-button theme-toggle"
             onClick={toggleTheme}
             style={{
               color: theme.colors.textSecondary,
@@ -222,8 +254,27 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
           >
             {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
             {expanded && (
-              <span className="theme-label">
+              <span className="footer-button-label">
                 {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+              </span>
+            )}
+          </button>
+          
+          {/* Logout Button */}
+          <button
+            className="footer-button logout-button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            style={{
+              color: theme.colors.error || '#ef4444',
+              backgroundColor: 'transparent'
+            }}
+            title="Sign Out"
+          >
+            <FiLogOut size={20} />
+            {expanded && (
+              <span className="footer-button-label">
+                {isLoggingOut ? 'Signing out...' : 'Sign Out'}
               </span>
             )}
           </button>
