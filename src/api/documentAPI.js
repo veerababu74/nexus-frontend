@@ -2,10 +2,12 @@ import { api, setApiBaseUrl } from '../utils/apiClient';
 
 // Use proxy in development, direct URL in production
 const API_BASE_URL = import.meta.env.DEV 
-    ? '' 
+    ? '' // Empty string in dev mode to use Vite proxy
     : 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
 
-// Configure the API client with the base URL if not in development
+// Configure the API client with the base URL
+// In development: uses empty base URL to leverage Vite proxy (/nexusai -> backend)
+// In production: uses full backend URL
 if (!import.meta.env.DEV) {
     setApiBaseUrl(API_BASE_URL);
 }
@@ -17,6 +19,7 @@ export const uploadDocument = async ({ file, index_name, tag }) => {
     if (tag) formData.append('tag', tag);
     
     try {
+        // The JWT token is automatically added by the API client interceptors
         const response = await api.upload('/nexusai/upload_document', formData);
         return response.data;
     } catch (error) {
@@ -37,6 +40,7 @@ export const deleteDocument = async ({ index_name, file_unique_id }) => {
         };
         console.log('Request body:', requestBody);
 
+        // The JWT token is automatically added by the API client interceptors
         const response = await api.delete('/nexusai/delete_document', {
             data: requestBody
         });
@@ -59,6 +63,8 @@ export const deleteDocument = async ({ index_name, file_unique_id }) => {
 
 export const getAllKnowledgeRecords = async () => {
     try {
+        // The JWT token is automatically added by the API client interceptors
+        // Headers will include: Authorization: Bearer <token>, Content-Type: application/json
         const response = await api.get('/nexusai/knowledge/all');
         return response.data;
     } catch (error) {

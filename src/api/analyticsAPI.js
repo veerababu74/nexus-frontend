@@ -1,13 +1,16 @@
 // Analytics API service for handling all analytics-related API calls
 import { api, setApiBaseUrl } from '../utils/apiClient';
 
-// Set the base URL for the API client
+// Use proxy in development, direct URL in production
+// Analytics API goes to a different backend than nexusai APIs
 const API_BASE_URL = import.meta.env.DEV 
-    ? '/api' 
+    ? '' // Empty string in dev mode to use Vite proxy
     : 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
 
 // Configure the API client with the base URL
-setApiBaseUrl(API_BASE_URL);
+if (!import.meta.env.DEV) {
+    setApiBaseUrl(API_BASE_URL);
+}
 
 /**
  * Fetch all conversation messages
@@ -15,7 +18,8 @@ setApiBaseUrl(API_BASE_URL);
  */
 export const fetchConversationMessages = async () => {
     try {
-        const response = await api.get('/UserChatHistory/All');
+        // Use /api prefix for analytics backend routes
+        const response = await api.get('/api/UserChatHistory/All');
         return response.data;
     } catch (error) {
         console.error('Error fetching conversation messages:', error);
