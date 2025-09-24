@@ -1,15 +1,6 @@
 // Chat API service for handling all chat-related API calls
-import { api, setApiBaseUrl } from '../utils/apiClient';
-
-// Use proxy in development, direct URL in production
-const API_BASE_URL = import.meta.env.DEV 
-    ? '' 
-    : (import.meta.env.VITE_API_BASE_URL || 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net');
-
-// Configure the API client with the base URL if not in development
-if (!import.meta.env.DEV) {
-    setApiBaseUrl(API_BASE_URL);
-}
+import { api } from '../utils/apiClient';
+import '../config/apiConfig'; // Initialize API configuration
 
 /**
  * Fetch chat response from the backend
@@ -19,7 +10,7 @@ if (!import.meta.env.DEV) {
 export const fetchChatResponse = async (requestPayload) => {
     try {
         console.log('Sending request payload:', requestPayload);
-        
+
         const response = await api.post('/nexusai/conversation/chat', requestPayload);
 
         console.log('Response status:', response.status);

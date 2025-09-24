@@ -1,23 +1,12 @@
-import { api, setApiBaseUrl } from '../utils/apiClient';
-
-// Use proxy in development, direct URL in production
-const API_BASE_URL = import.meta.env.DEV 
-    ? '' // Empty string in dev mode to use Vite proxy
-    : 'https://neurax-python-be-emhfejathhhpe6h3.uksouth-01.azurewebsites.net';
-
-// Configure the API client with the base URL
-// In development: uses empty base URL to leverage Vite proxy (/nexusai -> backend)
-// In production: uses full backend URL
-if (!import.meta.env.DEV) {
-    setApiBaseUrl(API_BASE_URL);
-}
+import { api } from '../utils/apiClient';
+import '../config/apiConfig'; // Initialize API configuration
 
 export const uploadDocument = async ({ file, index_name, tag }) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('index_name', index_name);
     if (tag) formData.append('tag', tag);
-    
+
     try {
         // The JWT token is automatically added by the API client interceptors
         const response = await api.upload('/nexusai/upload_document', formData);
@@ -34,9 +23,9 @@ export const deleteDocument = async ({ index_name, file_unique_id }) => {
     try {
         console.log('Deleting document with params:', { index_name, file_unique_id });
 
-        const requestBody = { 
-            index_name, 
-            file_unique_id 
+        const requestBody = {
+            index_name,
+            file_unique_id
         };
         console.log('Request body:', requestBody);
 

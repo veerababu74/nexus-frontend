@@ -1,16 +1,20 @@
 // Analytics API service for handling all analytics-related API calls
-import { api, setApiBaseUrl } from '../utils/apiClient';
+import { getApiClient } from '../utils/apiClient';
+import { API_ENDPOINTS } from '../config/apiConfig';
 
-// Use proxy in development, direct URL in production
-// Analytics API goes to a different backend than nexusai APIs
-const API_BASE_URL = import.meta.env.DEV 
-    ? '' // Empty string in dev mode to use Vite proxy
-    : 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
+// Create a separate axios instance for analytics API since it uses a different endpoint
+const analyticsApi = getApiClient().create({
+    baseURL: API_ENDPOINTS.ANALYTICS,
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
 
-// Configure the API client with the base URL
-if (!import.meta.env.DEV) {
-    setApiBaseUrl(API_BASE_URL);
-}
+// Copy interceptors from the main API client
+const mainClient = getApiClient();
+analyticsApi.interceptors.request = mainClient.interceptors.request;
+analyticsApi.interceptors.response = mainClient.interceptors.response;
 
 /**
  * Fetch all conversation messages
@@ -19,7 +23,7 @@ if (!import.meta.env.DEV) {
 export const fetchConversationMessages = async () => {
     try {
         // Use /api prefix for analytics backend routes
-        const response = await api.get('/api/UserChatHistory/All');
+        const response = await analyticsApi.get('/api/UserChatHistory/All');
         return response.data;
     } catch (error) {
         console.error('Error fetching conversation messages:', error);
@@ -34,7 +38,7 @@ export const fetchConversationMessages = async () => {
  */
 export const transformApiDataToMessages = (apiData) => {
     const messages = [];
-    
+
     apiData.forEach(record => {
         // Create user message
         if (record.UserMessage) {
@@ -47,7 +51,7 @@ export const transformApiDataToMessages = (apiData) => {
                 Reaction: 'None'
             });
         }
-        
+
         // Create AI message
         if (record.AIMessage) {
             messages.push({
@@ -60,7 +64,7 @@ export const transformApiDataToMessages = (apiData) => {
             });
         }
     });
-    
+
     return messages;
 };
 
@@ -118,13 +122,13 @@ export const fetchConversations = async () => {
 export const fetchAnalyticsSummary = async () => {
     try {
         const conversations = await fetchConversations();
-        
+
         // Calculate basic analytics
         const totalConversations = conversations.length;
         const totalMessages = conversations.reduce((acc, conv) => acc + conv.length, 0);
-        const userMessages = conversations.reduce((acc, conv) => 
+        const userMessages = conversations.reduce((acc, conv) =>
             acc + conv.filter(msg => msg.MessageType === 'User').length, 0);
-        
+
         return {
             totalConversations,
             totalMessages,
