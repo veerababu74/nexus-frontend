@@ -47,10 +47,16 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
 
   const menuItems = [
     {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: FiBarChart,
+      path: '/analytics'
+    },
+    {
       id: 'home',
-      label: 'Home',
+      label: 'Dashboard',
       icon: FiHome,
-      path: '/'
+      path: '/home'
     },
     {
       id: 'knowledge',
@@ -81,12 +87,6 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
       label: 'Leads & Logs',
       icon: FiFileText,
       path: '/leads-logs'
-    },
-    {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: FiBarChart,
-      path: '/analytics'
     },
     {
       id: 'settings',
@@ -122,8 +122,11 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
   };
 
   const isActiveRoute = (path) => {
-    if (path === '/') {
-      return location.pathname === '/' || location.pathname === '/home';
+    if (path === '/analytics') {
+      return location.pathname === '/analytics' || location.pathname === '/';
+    }
+    if (path === '/home') {
+      return location.pathname === '/home';
     }
     if (path === '/knowledge') {
       return location.pathname === '/knowledge' || location.pathname === '/faq' || location.pathname === '/files';
@@ -133,9 +136,6 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
     }
     if (path === '/settings') {
       return location.pathname === '/settings';
-    }
-    if (path === '/analytics') {
-      return location.pathname === '/analytics';
     }
     if (path === '/publishing') {
       return location.pathname === '/publishing';

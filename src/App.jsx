@@ -33,8 +33,8 @@ const App = () => {
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
               
-              {/* Protected routes - redirect to /home if accessing root */}
-              <Route path="/" element={<Navigate to="/home" replace />} />
+              {/* Protected routes - redirect to /analytics if accessing root */}
+              <Route path="/" element={<Navigate to="/analytics" replace />} />
               
               {/* Main app routes - with MainLayout and protection */}
               <Route path="/home" element={

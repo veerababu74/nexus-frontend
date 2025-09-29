@@ -419,12 +419,22 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
 }
 
-.add-button:hover {
+.add-button:hover:not(:disabled) {
     background: var(--primary-hover);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+}
+
+.add-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* Section Save Button */
@@ -443,12 +453,20 @@
     gap: 0.4rem;
     margin-top: 1rem;
     align-self: flex-start;
+    min-width: 80px;
+    justify-content: center;
 }
 
-.section-save-button:hover {
+.section-save-button:hover:not(:disabled) {
     background: var(--primary-hover);
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(24, 119, 242, 0.3);
+}
+
+.section-save-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .section-save-button .button-icon {
@@ -577,6 +595,19 @@
 @keyframes shimmer {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    animation: spin 1s linear infinite;
 }
 
 /* Responsive Design */

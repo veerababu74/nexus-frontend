@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import FAQ from '../FAQ/FAQ';
 import FileManager from '../FileManager/FileManager';
-import { FiBook, FiUpload, FiHelpCircle, FiFolder } from 'react-icons/fi';
+import StarterQuestions from '../StarterQuestions/StarterQuestions';
+import { FiBook, FiUpload, FiHelpCircle, FiFolder, FiMessageSquare } from 'react-icons/fi';
 import './Knowledge.css';
 
 const Knowledge = () => {
@@ -21,6 +22,12 @@ const Knowledge = () => {
       label: 'Document Upload',
       icon: FiFolder,
       component: FileManager
+    },
+    {
+      id: 'starter-questions',
+      label: 'Starter Questions',
+      icon: FiMessageSquare,
+      component: StarterQuestions
     }
   ];
 
@@ -55,7 +62,7 @@ const Knowledge = () => {
             <div>
               <h1 style={{ color: theme.colors.textPrimary }}>Knowledge Center</h1>
               <p style={{ color: theme.colors.textSecondary }}>
-                Access FAQs and manage your documents
+                Access FAQs, manage documents, and create starter questions
               </p>
             </div>
           </div>

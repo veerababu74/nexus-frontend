@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
-import { FiSettings, FiShield, FiXCircle, FiAlertTriangle, FiSave, FiRotateCcw } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiSettings, FiShield, FiXCircle, FiAlertTriangle, FiSave, FiRotateCcw, FiLoader } from 'react-icons/fi';
 import { useTheme } from '../../contexts/ThemeContext';
+import {
+    getAllBannedPhrases,
+    insertBannedPhrase,
+    deleteBannedPhrase,
+    getSafetyCopy,
+    updateSafetyCopy,
+    getAllSoftRedFlags,
+    insertSoftRedFlag,
+    deleteSoftRedFlag
+} from '../../api/toneSafetyAPI';
 import './ToneSafety.css';
 
 const ToneSafety = () => {
@@ -13,21 +23,50 @@ const ToneSafety = () => {
     const [newBannedPhrase, setNewBannedPhrase] = useState('');
     const [newSoftRedFlag, setNewSoftRedFlag] = useState('');
 
-    const [bannedPhrases, setBannedPhrases] = useState([
-        'diagnose', 'diagnosis', 'prescription', 'dosage', 'cure', 'guarantee'
-    ]);
-
-    const [softRedFlags, setSoftRedFlags] = useState([
-        'chest pain', 'suicidal', 'self-harm', 'new weakness', 'foot drop', 
-        'saddle numbness', 'bladder', 'bowel', 'fever after injection', 
-        'severe back pain after fall'
-    ]);
+    // Updated state structure to match API response
+    const [bannedPhrases, setBannedPhrases] = useState([]);
+    const [softRedFlags, setSoftRedFlags] = useState([]);
+    
+    // Loading states
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSavingSafety, setIsSavingSafety] = useState(false);
+    const [isAddingBannedPhrase, setIsAddingBannedPhrase] = useState(false);
+    const [isAddingSoftRedFlag, setIsAddingSoftRedFlag] = useState(false);
 
     const [safetyResponses, setSafetyResponses] = useState({
-        headerDisclaimer: "I'm an educational assistant at this clinic. I don't provide",
-        refusal: "I can't help with symptoms, diagnosis, or medications. For urgent",
-        escalation: "Your message suggests something that may need urgent attention"
+        HeaderDisclaimer: "I'm an educational assistant at this clinic. I don't provide",
+        RefusalBannedPhrase: "I can't help with symptoms, diagnosis, or medications. For urgent",
+        EscalationSoftRedFlag: "Your message suggests something that may need urgent attention"
     });
+
+    // Load data on component mount
+    useEffect(() => {
+        loadAllData();
+    }, []);
+
+    const loadAllData = async () => {
+        setIsLoading(true);
+        try {
+            // Load all data in parallel
+            const [bannedPhrasesData, softRedFlagsData, safetyCopyData] = await Promise.all([
+                getAllBannedPhrases(),
+                getAllSoftRedFlags(),
+                getSafetyCopy()
+            ]);
+
+            setBannedPhrases(bannedPhrasesData || []);
+            setSoftRedFlags(softRedFlagsData || []);
+            setSafetyResponses({
+                HeaderDisclaimer: safetyCopyData.HeaderDisclaimer || "I'm an educational assistant at this clinic. I don't provide",
+                RefusalBannedPhrase: safetyCopyData.RefusalBannedPhrase || "I can't help with symptoms, diagnosis, or medications. For urgent",
+                EscalationSoftRedFlag: safetyCopyData.EscalationSoftRedFlag || "Your message suggests something that may need urgent attention"
+            });
+        } catch (error) {
+            console.error('Error loading data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const presetOptions = [
         'Program Explainer',
@@ -37,26 +76,60 @@ const ToneSafety = () => {
         'General Helper'
     ];
 
-    const addBannedPhrase = () => {
-        if (newBannedPhrase.trim() && !bannedPhrases.includes(newBannedPhrase.trim())) {
-            setBannedPhrases([...bannedPhrases, newBannedPhrase.trim()]);
-            setNewBannedPhrase('');
+    const addBannedPhrase = async () => {
+        if (newBannedPhrase.trim() && !bannedPhrases.some(p => p.Phrase === newBannedPhrase.trim())) {
+            setIsAddingBannedPhrase(true);
+            try {
+                await insertBannedPhrase(newBannedPhrase.trim());
+                // Reload banned phrases to get the latest data with IDs
+                const updatedPhrases = await getAllBannedPhrases();
+                setBannedPhrases(updatedPhrases);
+                setNewBannedPhrase('');
+            } catch (error) {
+                console.error('Error adding banned phrase:', error);
+                alert('Error adding banned phrase. Please try again.');
+            } finally {
+                setIsAddingBannedPhrase(false);
+            }
         }
     };
 
-    const removeBannedPhrase = (phrase) => {
-        setBannedPhrases(bannedPhrases.filter(p => p !== phrase));
-    };
-
-    const addSoftRedFlag = () => {
-        if (newSoftRedFlag.trim() && !softRedFlags.includes(newSoftRedFlag.trim())) {
-            setSoftRedFlags([...softRedFlags, newSoftRedFlag.trim()]);
-            setNewSoftRedFlag('');
+    const removeBannedPhrase = async (id, phrase) => {
+        try {
+            await deleteBannedPhrase(id);
+            setBannedPhrases(bannedPhrases.filter(p => p.Id !== id));
+        } catch (error) {
+            console.error('Error removing banned phrase:', error);
+            alert('Error removing banned phrase. Please try again.');
         }
     };
 
-    const removeSoftRedFlag = (keyword) => {
-        setSoftRedFlags(softRedFlags.filter(k => k !== keyword));
+    const addSoftRedFlag = async () => {
+        if (newSoftRedFlag.trim() && !softRedFlags.some(f => f.Phrase === newSoftRedFlag.trim())) {
+            setIsAddingSoftRedFlag(true);
+            try {
+                await insertSoftRedFlag(newSoftRedFlag.trim());
+                // Reload soft red flags to get the latest data with IDs
+                const updatedFlags = await getAllSoftRedFlags();
+                setSoftRedFlags(updatedFlags);
+                setNewSoftRedFlag('');
+            } catch (error) {
+                console.error('Error adding soft red flag:', error);
+                alert('Error adding soft red flag. Please try again.');
+            } finally {
+                setIsAddingSoftRedFlag(false);
+            }
+        }
+    };
+
+    const removeSoftRedFlag = async (id, keyword) => {
+        try {
+            await deleteSoftRedFlag(id);
+            setSoftRedFlags(softRedFlags.filter(f => f.Id !== id));
+        } catch (error) {
+            console.error('Error removing soft red flag:', error);
+            alert('Error removing soft red flag. Please try again.');
+        }
     };
 
     const handleSliderChange = (setter) => (e) => {
@@ -79,9 +152,17 @@ const ToneSafety = () => {
         alert('Persona settings saved successfully!');
     };
 
-    const handleSafetySave = () => {
-        console.log('Saving safety copy...', safetyResponses);
-        alert('Safety copy saved successfully!');
+    const handleSafetySave = async () => {
+        setIsSavingSafety(true);
+        try {
+            await updateSafetyCopy(safetyResponses);
+            alert('Safety copy saved successfully!');
+        } catch (error) {
+            console.error('Error saving safety copy:', error);
+            alert('Error saving safety copy. Please try again.');
+        } finally {
+            setIsSavingSafety(false);
+        }
     };
 
     const handleSafetyResponseChange = (field, value) => {
@@ -91,24 +172,44 @@ const ToneSafety = () => {
         }));
     };
 
-    const handleReset = () => {
-        // Reset to default values
-        setFormality(5);
-        setEmpathy(7);
-        setBrevity(3);
-        setOptimism(8);
-        setPreset('Program Explainer');
-        setBannedPhrases(['diagnose', 'diagnosis', 'prescription', 'dosage', 'cure', 'guarantee']);
-        setSoftRedFlags(['chest pain', 'suicidal', 'self-harm', 'new weakness', 'foot drop', 
-            'saddle numbness', 'bladder', 'bowel', 'fever after injection', 
-            'severe back pain after fall']);
-        setSafetyResponses({
-            headerDisclaimer: "I'm an educational assistant at this clinic. I don't provide",
-            refusal: "I can't help with symptoms, diagnosis, or medications. For urgent",
-            escalation: "Your message suggests something that may need urgent attention"
-        });
-        alert('Configuration reset to defaults!');
+    const handleReset = async () => {
+        if (window.confirm('Are you sure you want to reset all configurations? This will reload data from the server.')) {
+            // Reset persona values to defaults
+            setFormality(5);
+            setEmpathy(7);
+            setBrevity(3);
+            setOptimism(8);
+            setPreset('Program Explainer');
+            
+            // Reload all data from API
+            await loadAllData();
+            
+            alert('Configuration reset and reloaded from server!');
+        }
     };
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="tone-safety-container">
+                <div className="tone-safety-header">
+                    <div className="header-content">
+                        <h1>Tone & Safety Configuration</h1>
+                    </div>
+                </div>
+                <div className="tone-safety-content" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '300px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <FiLoader size={20} className="loading-spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="tone-safety-container">
@@ -255,8 +356,8 @@ const ToneSafety = () => {
                         <div className="safety-response">
                             <label>Header Disclaimer</label>
                             <textarea
-                                value={safetyResponses.headerDisclaimer}
-                                onChange={(e) => handleSafetyResponseChange('headerDisclaimer', e.target.value)}
+                                value={safetyResponses.HeaderDisclaimer}
+                                onChange={(e) => handleSafetyResponseChange('HeaderDisclaimer', e.target.value)}
                                 className="safety-textarea"
                             />
                         </div>
@@ -264,8 +365,8 @@ const ToneSafety = () => {
                         <div className="safety-response">
                             <label>Refusal (clinical)</label>
                             <textarea
-                                value={safetyResponses.refusal}
-                                onChange={(e) => handleSafetyResponseChange('refusal', e.target.value)}
+                                value={safetyResponses.RefusalBannedPhrase}
+                                onChange={(e) => handleSafetyResponseChange('RefusalBannedPhrase', e.target.value)}
                                 className="safety-textarea"
                             />
                         </div>
@@ -273,15 +374,15 @@ const ToneSafety = () => {
                         <div className="safety-response">
                             <label>Escalation (soft RF)</label>
                             <textarea
-                                value={safetyResponses.escalation}
-                                onChange={(e) => handleSafetyResponseChange('escalation', e.target.value)}
+                                value={safetyResponses.EscalationSoftRedFlag}
+                                onChange={(e) => handleSafetyResponseChange('EscalationSoftRedFlag', e.target.value)}
                                 className="safety-textarea"
                             />
                         </div>
 
-                        <button className="section-save-button" onClick={handleSafetySave}>
+                        <button className="section-save-button" onClick={handleSafetySave} disabled={isSavingSafety}>
                             <FiSave className="button-icon" />
-                            Save
+                            {isSavingSafety ? 'Saving...' : 'Save'}
                         </button>
                     </div>
 
@@ -293,11 +394,11 @@ const ToneSafety = () => {
                         </h2>
 
                         <div className="tags-container">
-                            {bannedPhrases.map((phrase, index) => (
-                                <div key={index} className="tag banned-tag">
-                                    <span>{phrase}</span>
+                            {bannedPhrases.map((phraseObj, index) => (
+                                <div key={phraseObj.Id || index} className="tag banned-tag">
+                                    <span>{phraseObj.Phrase}</span>
                                     <button 
-                                        onClick={() => removeBannedPhrase(phrase)}
+                                        onClick={() => removeBannedPhrase(phraseObj.Id, phraseObj.Phrase)}
                                         className="tag-remove"
                                     >
                                         ×
@@ -314,9 +415,10 @@ const ToneSafety = () => {
                                 onChange={(e) => setNewBannedPhrase(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && addBannedPhrase()}
                                 className="add-input"
+                                disabled={isAddingBannedPhrase}
                             />
-                            <button onClick={addBannedPhrase} className="add-button">
-                                Add
+                            <button onClick={addBannedPhrase} className="add-button" disabled={isAddingBannedPhrase}>
+                                {isAddingBannedPhrase ? <FiLoader className="loading-spinner" size={14} /> : 'Add'}
                             </button>
                         </div>
                     </div>
@@ -329,11 +431,11 @@ const ToneSafety = () => {
                         </h2>
 
                         <div className="tags-container">
-                            {softRedFlags.map((keyword, index) => (
-                                <div key={index} className="tag redflag-tag">
-                                    <span>{keyword}</span>
+                            {softRedFlags.map((flagObj, index) => (
+                                <div key={flagObj.Id || index} className="tag redflag-tag">
+                                    <span>{flagObj.Phrase}</span>
                                     <button 
-                                        onClick={() => removeSoftRedFlag(keyword)}
+                                        onClick={() => removeSoftRedFlag(flagObj.Id, flagObj.Phrase)}
                                         className="tag-remove"
                                     >
                                         ×
@@ -350,9 +452,10 @@ const ToneSafety = () => {
                                 onChange={(e) => setNewSoftRedFlag(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && addSoftRedFlag()}
                                 className="add-input"
+                                disabled={isAddingSoftRedFlag}
                             />
-                            <button onClick={addSoftRedFlag} className="add-button">
-                                Add
+                            <button onClick={addSoftRedFlag} className="add-button" disabled={isAddingSoftRedFlag}>
+                                {isAddingSoftRedFlag ? <FiLoader className="loading-spinner" size={14} /> : 'Add'}
                             </button>
                         </div>
                     </div>
