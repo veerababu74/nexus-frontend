@@ -83,7 +83,6 @@ const StarterQuestions = () => {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FiLoader size={20} className="loading-spinner" />
-          <span>Loading starter questions...</span>
         </div>
       </div>
     );

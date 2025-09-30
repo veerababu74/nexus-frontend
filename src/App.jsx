@@ -32,11 +32,8 @@ const App = () => {
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
               
-              {/* Protected routes - redirect to /home if accessing root */}
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              
               {/* Main app routes - with MainLayout and protection */}
-              <Route path="/home" element={
+              <Route path="/" element={
                 <ProtectedRoute>
                   <MainLayout>
                     <HomePage />

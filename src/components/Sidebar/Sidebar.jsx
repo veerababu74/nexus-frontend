@@ -49,7 +49,7 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
       id: 'home',
       label: 'Home',
       icon: FiHome,
-      path: '/home'
+      path: '/'
     },
     {
       id: 'knowledge',
@@ -115,8 +115,8 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
   };
 
   const isActiveRoute = (path) => {
-    if (path === '/home') {
-      return location.pathname === '/home' || location.pathname === '/';
+    if (path === '/') {
+      return location.pathname === '/';
     }
     if (path === '/knowledge') {
       return location.pathname === '/knowledge' || location.pathname === '/faq' || location.pathname === '/files';

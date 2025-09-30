@@ -7,9 +7,9 @@ const Login = () => {
   const { login, isAuthenticated, isLoading, error } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // If already authenticated, redirect to analytics (home page)
+  // If already authenticated, redirect to home page
   if (isAuthenticated && !isLoading) {
-    return <Navigate to="/analytics" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const handleLogin = async () => {
