@@ -1,9 +1,28 @@
-import axios from 'axios';
+import { getApiClient } from '../utils/apiClient';
+import '../config/apiConfig'; // Initialize API configuration
+
+// Base URL for the API
+const BASE_URL = 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
+
+// Create a separate axios instance for starter questions API since it uses a different endpoint
+const starterQuestionsApi = getApiClient().create({
+    baseURL: BASE_URL,
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json',
+        'accept': 'text/plain'
+    }
+});
+
+// Copy interceptors from the main API client to ensure authentication headers are added
+const mainClient = getApiClient();
+starterQuestionsApi.interceptors.request = mainClient.interceptors.request;
+starterQuestionsApi.interceptors.response = mainClient.interceptors.response;
 
 // StarterQuestions API endpoints
 const STARTER_QUESTIONS_ENDPOINTS = {
-  GET: 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net/StarterQuestions/Get',
-  SAVE: 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net/StarterQuestions/Save'
+  GET: '/StarterQuestions/Get',
+  SAVE: '/StarterQuestions/Save'
 };
 
 /**
@@ -12,12 +31,7 @@ const STARTER_QUESTIONS_ENDPOINTS = {
  */
 export const getStarterQuestions = async () => {
   try {
-    const response = await axios.get(STARTER_QUESTIONS_ENDPOINTS.GET, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await starterQuestionsApi.get(STARTER_QUESTIONS_ENDPOINTS.GET);
     
     return response.data;
   } catch (error) {
@@ -41,12 +55,7 @@ export const getStarterQuestions = async () => {
  */
 export const saveStarterQuestions = async (questionsData) => {
   try {
-    const response = await axios.put(STARTER_QUESTIONS_ENDPOINTS.SAVE, questionsData, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await starterQuestionsApi.put(STARTER_QUESTIONS_ENDPOINTS.SAVE, questionsData);
     
     return response.data;
   } catch (error) {

@@ -14,7 +14,6 @@ import {
   FiChevronRight,
   FiSettings,
   FiShield,
-  FiBarChart,
   FiGlobe,
   FiFileText,
   FiLogOut
@@ -47,14 +46,8 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
 
   const menuItems = [
     {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: FiBarChart,
-      path: '/analytics'
-    },
-    {
       id: 'home',
-      label: 'Dashboard',
+      label: 'Home',
       icon: FiHome,
       path: '/home'
     },
@@ -122,11 +115,8 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
   };
 
   const isActiveRoute = (path) => {
-    if (path === '/analytics') {
-      return location.pathname === '/analytics' || location.pathname === '/';
-    }
     if (path === '/home') {
-      return location.pathname === '/home';
+      return location.pathname === '/home' || location.pathname === '/';
     }
     if (path === '/knowledge') {
       return location.pathname === '/knowledge' || location.pathname === '/faq' || location.pathname === '/files';

@@ -13,7 +13,6 @@ import ImprovedChatPage from './pages/ImprovedChatPage';
 import KnowledgePage from './pages/KnowledgePage';
 import ToneSafetyPage from './pages/ToneSafetyPage';
 import SettingsPage from './pages/SettingsPage';
-import AnalyticsPage from './pages/AnalyticsPage';
 import PublishingPage from './pages/PublishingPage';
 import LeadsLogsPage from './pages/LeadsLogsPage';
 import NSXAdminPage from './pages/NSXAdminPage';
@@ -33,8 +32,8 @@ const App = () => {
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
               
-              {/* Protected routes - redirect to /analytics if accessing root */}
-              <Route path="/" element={<Navigate to="/analytics" replace />} />
+              {/* Protected routes - redirect to /home if accessing root */}
+              <Route path="/" element={<Navigate to="/home" replace />} />
               
               {/* Main app routes - with MainLayout and protection */}
               <Route path="/home" element={
@@ -76,13 +75,6 @@ const App = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <SettingsPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              } />
-              <Route path="/analytics" element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <AnalyticsPage />
                   </MainLayout>
                 </ProtectedRoute>
               } />

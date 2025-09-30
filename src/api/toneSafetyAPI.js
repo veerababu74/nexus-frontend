@@ -1,23 +1,39 @@
-import axios from 'axios';
+import { getApiClient } from '../utils/apiClient';
+import '../config/apiConfig'; // Initialize API configuration
 
 // Base URL for the API
 const BASE_URL = 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
 
+// Create a separate axios instance for tone safety API since it uses a different endpoint
+const toneSafetyApi = getApiClient().create({
+    baseURL: BASE_URL,
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json',
+        'accept': 'text/plain'
+    }
+});
+
+// Copy interceptors from the main API client to ensure authentication headers are added
+const mainClient = getApiClient();
+toneSafetyApi.interceptors.request = mainClient.interceptors.request;
+toneSafetyApi.interceptors.response = mainClient.interceptors.response;
+
 // API endpoints
 const TONE_SAFETY_ENDPOINTS = {
   // Banned Phrases
-  BANNED_PHRASES_INSERT: `${BASE_URL}/BannedPhrases/Insert`,
-  BANNED_PHRASES_ALL: `${BASE_URL}/BannedPhrases/All`,
-  BANNED_PHRASES_DELETE: `${BASE_URL}/BannedPhrases/Delete`,
+  BANNED_PHRASES_INSERT: '/BannedPhrases/Insert',
+  BANNED_PHRASES_ALL: '/BannedPhrases/All',
+  BANNED_PHRASES_DELETE: '/BannedPhrases/Delete',
   
   // Safety Copy
-  SAFETY_COPY_UPDATE: `${BASE_URL}/SafetyCopy/Update`,
-  SAFETY_COPY_GET: `${BASE_URL}/SafetyCopy/Get`,
+  SAFETY_COPY_UPDATE: '/SafetyCopy/Update',
+  SAFETY_COPY_GET: '/SafetyCopy/Get',
   
   // Soft Red Flag
-  SOFT_RED_FLAG_INSERT: `${BASE_URL}/SoftRedFlag/Insert`,
-  SOFT_RED_FLAG_ALL: `${BASE_URL}/SoftRedFlag/All`,
-  SOFT_RED_FLAG_DELETE: `${BASE_URL}/SoftRedFlag/Delete`,
+  SOFT_RED_FLAG_INSERT: '/SoftRedFlag/Insert',
+  SOFT_RED_FLAG_ALL: '/SoftRedFlag/All',
+  SOFT_RED_FLAG_DELETE: '/SoftRedFlag/Delete',
 };
 
 // ======================== BANNED PHRASES API ========================
@@ -28,12 +44,7 @@ const TONE_SAFETY_ENDPOINTS = {
  */
 export const getAllBannedPhrases = async () => {
   try {
-    const response = await axios.get(TONE_SAFETY_ENDPOINTS.BANNED_PHRASES_ALL, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await toneSafetyApi.get(TONE_SAFETY_ENDPOINTS.BANNED_PHRASES_ALL);
     return response.data;
   } catch (error) {
     console.error('Error fetching banned phrases:', error);
@@ -49,13 +60,8 @@ export const getAllBannedPhrases = async () => {
  */
 export const insertBannedPhrase = async (phrase) => {
   try {
-    const response = await axios.post(TONE_SAFETY_ENDPOINTS.BANNED_PHRASES_INSERT, {
+    const response = await toneSafetyApi.post(TONE_SAFETY_ENDPOINTS.BANNED_PHRASES_INSERT, {
       Phrase: phrase
-    }, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
     });
     return response.data;
   } catch (error) {
@@ -71,12 +77,8 @@ export const insertBannedPhrase = async (phrase) => {
  */
 export const deleteBannedPhrase = async (id) => {
   try {
-    const response = await axios.delete(TONE_SAFETY_ENDPOINTS.BANNED_PHRASES_DELETE, {
-      params: { id },
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
+    const response = await toneSafetyApi.delete(TONE_SAFETY_ENDPOINTS.BANNED_PHRASES_DELETE, {
+      params: { id }
     });
     return response.data;
   } catch (error) {
@@ -93,12 +95,7 @@ export const deleteBannedPhrase = async (id) => {
  */
 export const getSafetyCopy = async () => {
   try {
-    const response = await axios.get(TONE_SAFETY_ENDPOINTS.SAFETY_COPY_GET, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await toneSafetyApi.get(TONE_SAFETY_ENDPOINTS.SAFETY_COPY_GET);
     return response.data;
   } catch (error) {
     console.error('Error fetching safety copy:', error);
@@ -118,15 +115,10 @@ export const getSafetyCopy = async () => {
  */
 export const updateSafetyCopy = async (safetyCopyData) => {
   try {
-    const response = await axios.put(TONE_SAFETY_ENDPOINTS.SAFETY_COPY_UPDATE, {
+    const response = await toneSafetyApi.put(TONE_SAFETY_ENDPOINTS.SAFETY_COPY_UPDATE, {
       HeaderDisclaimer: safetyCopyData.HeaderDisclaimer,
       RefusalBannedPhrase: safetyCopyData.RefusalBannedPhrase,
       EscalationSoftRedFlag: safetyCopyData.EscalationSoftRedFlag
-    }, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
     });
     return response.data;
   } catch (error) {
@@ -143,12 +135,7 @@ export const updateSafetyCopy = async (safetyCopyData) => {
  */
 export const getAllSoftRedFlags = async () => {
   try {
-    const response = await axios.get(TONE_SAFETY_ENDPOINTS.SOFT_RED_FLAG_ALL, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await toneSafetyApi.get(TONE_SAFETY_ENDPOINTS.SOFT_RED_FLAG_ALL);
     return response.data;
   } catch (error) {
     console.error('Error fetching soft red flags:', error);
@@ -164,13 +151,8 @@ export const getAllSoftRedFlags = async () => {
  */
 export const insertSoftRedFlag = async (phrase) => {
   try {
-    const response = await axios.post(TONE_SAFETY_ENDPOINTS.SOFT_RED_FLAG_INSERT, {
+    const response = await toneSafetyApi.post(TONE_SAFETY_ENDPOINTS.SOFT_RED_FLAG_INSERT, {
       Phrase: phrase
-    }, {
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
     });
     return response.data;
   } catch (error) {
@@ -186,12 +168,8 @@ export const insertSoftRedFlag = async (phrase) => {
  */
 export const deleteSoftRedFlag = async (id) => {
   try {
-    const response = await axios.delete(TONE_SAFETY_ENDPOINTS.SOFT_RED_FLAG_DELETE, {
-      params: { id },
-      headers: {
-        'accept': 'text/plain',
-        'Content-Type': 'application/json'
-      }
+    const response = await toneSafetyApi.delete(TONE_SAFETY_ENDPOINTS.SOFT_RED_FLAG_DELETE, {
+      params: { id }
     });
     return response.data;
   } catch (error) {

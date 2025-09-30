@@ -63,7 +63,6 @@ export const graphConfig = {
 // Navigation configuration
 export const navigationConfig = {
   protectedRoutes: [
-    "/analytics",
     "/home",
     "/regular",
     "/improved", 
@@ -74,5 +73,5 @@ export const navigationConfig = {
     "/leads-logs"
   ],
   loginRoute: "/login",
-  defaultProtectedRoute: "/analytics"
+  defaultProtectedRoute: "/home"
 };
