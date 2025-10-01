@@ -11,9 +11,9 @@ const analyticsApi = getApiClient().create({
     }
 });
 
-// Create a separate axios instance for staff API using the base URL
+// Create a separate axios instance for staff API using the same base URL as analytics
 const staffApi = getApiClient().create({
-    baseURL: 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net',
+    baseURL: API_ENDPOINTS.ANALYTICS, // Use the same endpoint as analytics
     timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
@@ -34,11 +34,17 @@ staffApi.interceptors.response = mainClient.interceptors.response;
  */
 export const fetchConversationMessages = async () => {
     try {
-        // Use /api prefix for analytics backend routes
-        const response = await analyticsApi.get('/api/UserChatHistory/All');
+        // In development, use /api prefix due to proxy. In production, call directly
+        const endpoint = import.meta.env.DEV 
+            ? '/api/UserChatHistory/All' 
+            : '/api/UserChatHistory/All';
+        
+        const response = await analyticsApi.get(endpoint);
         return response.data;
     } catch (error) {
         console.error('Error fetching conversation messages:', error);
+        console.error('API endpoint:', import.meta.env.DEV ? 'Development with proxy' : 'Production direct');
+        console.error('Base URL:', analyticsApi.defaults.baseURL);
         throw error;
     }
 };
@@ -160,10 +166,25 @@ export const fetchAnalyticsSummary = async () => {
  */
 export const fetchDoctorDetails = async () => {
     try {
-        const response = await staffApi.get('/Staff/GetDoctorDetails');
+        // In development, proxy will handle the routing. In production, call directly
+        const endpoint = import.meta.env.DEV 
+            ? '/api/Staff/GetDoctorDetails'  // Use proxy in development
+            : '/Staff/GetDoctorDetails';     // Direct call in production
+        
+        console.log('Fetching doctor details from:', endpoint);
+        console.log('Staff API Base URL:', staffApi.defaults.baseURL);
+        console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
+        
+        const response = await staffApi.get(endpoint);
+        console.log('Doctor details response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching doctor details:', error);
+        console.error('Request details:', {
+            baseURL: staffApi.defaults.baseURL,
+            endpoint: import.meta.env.DEV ? '/api/Staff/GetDoctorDetails' : '/Staff/GetDoctorDetails',
+            environment: import.meta.env.DEV ? 'Development' : 'Production'
+        });
         throw error;
     }
 };

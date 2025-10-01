@@ -82,16 +82,27 @@ const Home = () => {
   // Load conversation count on component mount
   useEffect(() => {
     const loadInitialData = async () => {
+      console.log('Loading initial data...');
+      console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
+      
       try {
         // Load conversations and doctor details in parallel
         const [conversationsData, doctorData] = await Promise.all([
-          fetchConversations(),
-          fetchDoctorDetails()
+          fetchConversations().catch(err => {
+            console.error('Conversations API failed:', err);
+            return [];
+          }),
+          fetchDoctorDetails().catch(err => {
+            console.error('Doctor details API failed:', err);
+            return null;
+          })
         ]);
         
-        setConversations(conversationsData);
-        setDoctorDetails(doctorData);
+        console.log('Conversations loaded:', conversationsData?.length || 0, 'sessions');
         console.log('Doctor details loaded:', doctorData);
+        
+        setConversations(conversationsData || []);
+        setDoctorDetails(doctorData);
       } catch (error) {
         console.error('Error fetching initial data:', error);
         setConversations([]);
