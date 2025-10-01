@@ -12,7 +12,7 @@ import {
   FiCpu
 } from 'react-icons/fi';
 import { ClipLoader } from 'react-spinners';
-import { fetchConversations, fetchAnalyticsSummary } from '../../api/analyticsAPI';
+import { fetchConversations, fetchAnalyticsSummary, fetchDoctorDetails } from '../../api/analyticsAPI';
 import './Home.css'; // Import Home styles
 
 const Home = () => {
@@ -21,6 +21,8 @@ const Home = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [doctorDetails, setDoctorDetails] = useState(null);
+  const [doctorLoading, setDoctorLoading] = useState(true);
 
   const analyticsData = {
     conversations: conversations.length,
@@ -55,11 +57,20 @@ const Home = () => {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const conversationsData = await fetchConversations();
+        // Load conversations and doctor details in parallel
+        const [conversationsData, doctorData] = await Promise.all([
+          fetchConversations(),
+          fetchDoctorDetails()
+        ]);
+        
         setConversations(conversationsData);
+        setDoctorDetails(doctorData);
       } catch (error) {
-        console.error('Error fetching initial conversation data:', error);
+        console.error('Error fetching initial data:', error);
         setConversations([]);
+        // Don't set doctor details to null on error, keep loading state
+      } finally {
+        setDoctorLoading(false);
       }
     };
 
@@ -336,47 +347,10 @@ const Home = () => {
             className="hero-title"
             style={{ color: theme.colors.textPrimary }}
           >
-            Welcome to Nexus
+            Welcome to Doctor {doctorDetails?.DoctorFirstName}
           </h1>
-          <p 
-            className="hero-description"
-            style={{ color: theme.colors.textSecondary }}
-          >
-            Your intelligent assistant for seamless communication and knowledge management.
-            Get started by exploring our features below.
-          </p>
-          <div className="hero-actions">
-            <button 
-              className="cta-button primary"
-              style={{ 
-                backgroundColor: theme.colors.primary,
-                color: theme.colors.onPrimary 
-              }}
-            >
-              Get Started
-            </button>
-            <button 
-              className="cta-button secondary"
-              style={{ 
-                backgroundColor: 'transparent',
-                color: theme.colors.primary,
-                border: `2px solid ${theme.colors.primary}`
-              }}
-            >
-              Learn More
-            </button>
-          </div>
         </div>
       </section>
-
-      <div className="analytics-header">
-        <h1 
-          className="analytics-title"
-          style={{ color: theme.colors.textPrimary }}
-        >
-          Home Dashboard
-        </h1>
-      </div>
 
       <div className="analytics-content">
         {/* Top Row Stats */}

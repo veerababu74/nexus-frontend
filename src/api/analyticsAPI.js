@@ -11,10 +11,22 @@ const analyticsApi = getApiClient().create({
     }
 });
 
+// Create a separate axios instance for staff API using the base URL
+const staffApi = getApiClient().create({
+    baseURL: 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net',
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json',
+        'accept': 'text/plain'
+    }
+});
+
 // Copy interceptors from the main API client
 const mainClient = getApiClient();
 analyticsApi.interceptors.request = mainClient.interceptors.request;
 analyticsApi.interceptors.response = mainClient.interceptors.response;
+staffApi.interceptors.request = mainClient.interceptors.request;
+staffApi.interceptors.response = mainClient.interceptors.response;
 
 /**
  * Fetch all conversation messages
@@ -138,6 +150,20 @@ export const fetchAnalyticsSummary = async () => {
         };
     } catch (error) {
         console.error('Error fetching analytics summary:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch doctor details from Staff API
+ * @returns {Promise<Object>} - Doctor details object
+ */
+export const fetchDoctorDetails = async () => {
+    try {
+        const response = await staffApi.get('/Staff/GetDoctorDetails');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching doctor details:', error);
         throw error;
     }
 };

@@ -9,17 +9,19 @@ import {
     updateSafetyCopy,
     getAllSoftRedFlags,
     insertSoftRedFlag,
-    deleteSoftRedFlag
+    deleteSoftRedFlag,
+    getDoctorPersonaSettings,
+    saveDoctorPersonaSettings
 } from '../../api/toneSafetyAPI';
 import './ToneSafety.css';
 
 const ToneSafety = () => {
     const { theme } = useTheme();
-    const [formality, setFormality] = useState(5);
-    const [empathy, setEmpathy] = useState(7);
-    const [brevity, setBrevity] = useState(3);
-    const [optimism, setOptimism] = useState(8);
-    const [preset, setPreset] = useState('Program Explainer');
+    const [formality, setFormality] = useState(4);
+    const [empathy, setEmpathy] = useState(3);
+    const [brevity, setBrevity] = useState(5);
+    const [optimism, setOptimism] = useState(9);
+    const [preset, setPreset] = useState('Default');
     const [newBannedPhrase, setNewBannedPhrase] = useState('');
     const [newSoftRedFlag, setNewSoftRedFlag] = useState('');
 
@@ -27,9 +29,18 @@ const ToneSafety = () => {
     const [bannedPhrases, setBannedPhrases] = useState([]);
     const [softRedFlags, setSoftRedFlags] = useState([]);
     
+    // Persona settings state
+    const [personaSettings, setPersonaSettings] = useState({
+        FormalityPersonaId: "",
+        EmpathyPersonaId: "",
+        BrevityPersonaId: "",
+        OptimismPersonaId: ""
+    });
+    
     // Loading states
     const [isLoading, setIsLoading] = useState(true);
     const [isSavingSafety, setIsSavingSafety] = useState(false);
+    const [isSavingPersona, setIsSavingPersona] = useState(false);
     const [isAddingBannedPhrase, setIsAddingBannedPhrase] = useState(false);
     const [isAddingSoftRedFlag, setIsAddingSoftRedFlag] = useState(false);
 
@@ -44,14 +55,31 @@ const ToneSafety = () => {
         loadAllData();
     }, []);
 
+    // Update slider values when persona settings change
+    useEffect(() => {
+        if (personaSettings.FormalityPersonaId) {
+            setFormality(parseInt(personaSettings.FormalityPersonaId) || 4);
+        }
+        if (personaSettings.EmpathyPersonaId) {
+            setEmpathy(parseInt(personaSettings.EmpathyPersonaId) || 3);
+        }
+        if (personaSettings.BrevityPersonaId) {
+            setBrevity(parseInt(personaSettings.BrevityPersonaId) || 5);
+        }
+        if (personaSettings.OptimismPersonaId) {
+            setOptimism(parseInt(personaSettings.OptimismPersonaId) || 9);
+        }
+    }, [personaSettings]);
+
     const loadAllData = async () => {
         setIsLoading(true);
         try {
             // Load all data in parallel
-            const [bannedPhrasesData, softRedFlagsData, safetyCopyData] = await Promise.all([
+            const [bannedPhrasesData, softRedFlagsData, safetyCopyData, personaSettingsData] = await Promise.all([
                 getAllBannedPhrases(),
                 getAllSoftRedFlags(),
-                getSafetyCopy()
+                getSafetyCopy(),
+                getDoctorPersonaSettings()
             ]);
 
             setBannedPhrases(bannedPhrasesData || []);
@@ -61,6 +89,12 @@ const ToneSafety = () => {
                 RefusalBannedPhrase: safetyCopyData.RefusalBannedPhrase || "I can't help with symptoms, diagnosis, or medications. For urgent",
                 EscalationSoftRedFlag: safetyCopyData.EscalationSoftRedFlag || "Your message suggests something that may need urgent attention"
             });
+            setPersonaSettings({
+                FormalityPersonaId: personaSettingsData.FormalityPersonaId || "",
+                EmpathyPersonaId: personaSettingsData.EmpathyPersonaId || "",
+                BrevityPersonaId: personaSettingsData.BrevityPersonaId || "",
+                OptimismPersonaId: personaSettingsData.OptimismPersonaId || ""
+            });
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -69,12 +103,23 @@ const ToneSafety = () => {
     };
 
     const presetOptions = [
+        'Default',
         'Program Explainer',
         'Educational Assistant',
         'Support Specialist',
         'Information Guide',
         'General Helper'
     ];
+
+    // Define preset values
+    const presetValues = {
+        'Default': { formality: 4, empathy: 3, brevity: 5, optimism: 9 },
+        'Program Explainer': { formality: 5, empathy: 7, brevity: 3, optimism: 8 },
+        'Educational Assistant': { formality: 6, empathy: 8, brevity: 4, optimism: 7 },
+        'Support Specialist': { formality: 4, empathy: 9, brevity: 5, optimism: 8 },
+        'Information Guide': { formality: 7, empathy: 6, brevity: 6, optimism: 7 },
+        'General Helper': { formality: 5, empathy: 7, brevity: 4, optimism: 8 }
+    };
 
     const addBannedPhrase = async () => {
         if (newBannedPhrase.trim() && !bannedPhrases.some(p => p.Phrase === newBannedPhrase.trim())) {
@@ -136,6 +181,19 @@ const ToneSafety = () => {
         setter(parseInt(e.target.value));
     };
 
+    const handlePresetChange = (selectedPreset) => {
+        setPreset(selectedPreset);
+        
+        // Apply preset values if they exist
+        if (presetValues[selectedPreset]) {
+            const values = presetValues[selectedPreset];
+            setFormality(values.formality);
+            setEmpathy(values.empathy);
+            setBrevity(values.brevity);
+            setOptimism(values.optimism);
+        }
+    };
+
     const handleSave = () => {
         // Save configuration logic here
         console.log('Saving configuration...', {
@@ -145,11 +203,31 @@ const ToneSafety = () => {
         alert('Configuration saved successfully!');
     };
 
-    const handlePersonaSave = () => {
-        console.log('Saving persona settings...', {
-            formality, empathy, brevity, optimism, preset
-        });
-        alert('Persona settings saved successfully!');
+    const handlePersonaSave = async () => {
+        setIsSavingPersona(true);
+        try {
+            // Convert slider values (0-10) to string IDs for the API
+            const personaData = {
+                FormalityPersonaId: formality.toString(),
+                EmpathyPersonaId: empathy.toString(),
+                BrevityPersonaId: brevity.toString(),
+                OptimismPersonaId: optimism.toString()
+            };
+            
+            await saveDoctorPersonaSettings(personaData);
+            setPersonaSettings(personaData);
+            
+            console.log('Saving persona settings...', {
+                formality, empathy, brevity, optimism, preset,
+                personaData
+            });
+            alert('Persona settings saved successfully!');
+        } catch (error) {
+            console.error('Error saving persona settings:', error);
+            alert('Error saving persona settings. Please try again.');
+        } finally {
+            setIsSavingPersona(false);
+        }
     };
 
     const handleSafetySave = async () => {
@@ -175,14 +253,28 @@ const ToneSafety = () => {
     const handleReset = async () => {
         if (window.confirm('Are you sure you want to reset all configurations? This will reload data from the server.')) {
             // Reset persona values to defaults
-            setFormality(5);
-            setEmpathy(7);
-            setBrevity(3);
-            setOptimism(8);
-            setPreset('Program Explainer');
+            setFormality(4);
+            setEmpathy(3);
+            setBrevity(5);
+            setOptimism(9);
+            setPreset('Default');
             
             // Reload all data from API
             await loadAllData();
+            
+            // Update local slider values based on loaded persona settings
+            if (personaSettings.FormalityPersonaId) {
+                setFormality(parseInt(personaSettings.FormalityPersonaId) || 4);
+            }
+            if (personaSettings.EmpathyPersonaId) {
+                setEmpathy(parseInt(personaSettings.EmpathyPersonaId) || 3);
+            }
+            if (personaSettings.BrevityPersonaId) {
+                setBrevity(parseInt(personaSettings.BrevityPersonaId) || 5);
+            }
+            if (personaSettings.OptimismPersonaId) {
+                setOptimism(parseInt(personaSettings.OptimismPersonaId) || 9);
+            }
             
             alert('Configuration reset and reloaded from server!');
         }
@@ -331,7 +423,7 @@ const ToneSafety = () => {
                             <label>Preset</label>
                             <select 
                                 value={preset} 
-                                onChange={(e) => setPreset(e.target.value)}
+                                onChange={(e) => handlePresetChange(e.target.value)}
                                 className="preset-select"
                             >
                                 {presetOptions.map(option => (
@@ -340,9 +432,9 @@ const ToneSafety = () => {
                             </select>
                         </div>
 
-                        <button className="section-save-button" onClick={handlePersonaSave}>
+                        <button className="section-save-button" onClick={handlePersonaSave} disabled={isSavingPersona}>
                             <FiSave className="button-icon" />
-                            Save
+                            {isSavingPersona ? 'Saving...' : 'Save'}
                         </button>
                     </div>
 

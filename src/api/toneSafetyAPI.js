@@ -34,6 +34,10 @@ const TONE_SAFETY_ENDPOINTS = {
   SOFT_RED_FLAG_INSERT: '/SoftRedFlag/Insert',
   SOFT_RED_FLAG_ALL: '/SoftRedFlag/All',
   SOFT_RED_FLAG_DELETE: '/SoftRedFlag/Delete',
+  
+  // Doctor Persona Settings
+  DOCTOR_PERSONA_SETTINGS_GET: '/DoctorPersonaSettings/Get',
+  DOCTOR_PERSONA_SETTINGS_SAVE: '/DoctorPersonaSettings/Save',
 };
 
 // ======================== BANNED PHRASES API ========================
@@ -174,6 +178,48 @@ export const deleteSoftRedFlag = async (id) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting soft red flag:', error);
+    throw error;
+  }
+};
+
+// ======================== DOCTOR PERSONA SETTINGS API ========================
+
+/**
+ * Get doctor persona settings
+ * @returns {Promise} Promise that resolves to persona settings data
+ */
+export const getDoctorPersonaSettings = async () => {
+  try {
+    const response = await toneSafetyApi.get(TONE_SAFETY_ENDPOINTS.DOCTOR_PERSONA_SETTINGS_GET);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching doctor persona settings:', error);
+    // Return default structure if API fails
+    return {
+      FormalityPersonaId: "",
+      EmpathyPersonaId: "",
+      BrevityPersonaId: "",
+      OptimismPersonaId: ""
+    };
+  }
+};
+
+/**
+ * Save doctor persona settings
+ * @param {Object} personaSettings - Object with FormalityPersonaId, EmpathyPersonaId, BrevityPersonaId, OptimismPersonaId
+ * @returns {Promise} Promise that resolves to the response
+ */
+export const saveDoctorPersonaSettings = async (personaSettings) => {
+  try {
+    const response = await toneSafetyApi.put(TONE_SAFETY_ENDPOINTS.DOCTOR_PERSONA_SETTINGS_SAVE, {
+      FormalityPersonaId: personaSettings.FormalityPersonaId,
+      EmpathyPersonaId: personaSettings.EmpathyPersonaId,
+      BrevityPersonaId: personaSettings.BrevityPersonaId,
+      OptimismPersonaId: personaSettings.OptimismPersonaId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error saving doctor persona settings:', error);
     throw error;
   }
 };
