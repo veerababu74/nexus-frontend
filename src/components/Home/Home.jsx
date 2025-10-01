@@ -24,6 +24,32 @@ const Home = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [doctorLoading, setDoctorLoading] = useState(true);
 
+  // Typing animation component
+  const TypingAnimation = () => {
+    const [dots, setDots] = useState('');
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setDots(prev => {
+          if (prev === '...') return '';
+          return prev + '.';
+        });
+      }, 500);
+
+      return () => clearInterval(interval);
+    }, []);
+
+    return (
+      <span style={{ 
+        display: 'inline-block',
+        width: '20px',
+        textAlign: 'left'
+      }}>
+        {dots}
+      </span>
+    );
+  };
+
   const analyticsData = {
     conversations: conversations.length,
     selfServePercentage: '0%',
@@ -65,6 +91,7 @@ const Home = () => {
         
         setConversations(conversationsData);
         setDoctorDetails(doctorData);
+        console.log('Doctor details loaded:', doctorData);
       } catch (error) {
         console.error('Error fetching initial data:', error);
         setConversations([]);
@@ -347,7 +374,13 @@ const Home = () => {
             className="hero-title"
             style={{ color: theme.colors.textPrimary }}
           >
-            Welcome to Doctor {doctorDetails?.DoctorFirstName}
+            {doctorLoading ? (
+              <>
+                Welcome to Doctor<TypingAnimation />
+              </>
+            ) : (
+              `Welcome to Doctor ${doctorDetails?.DoctorFirstName || 'Guest'}`
+            )}
           </h1>
         </div>
       </section>
