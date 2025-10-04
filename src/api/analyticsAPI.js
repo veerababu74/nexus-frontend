@@ -34,10 +34,10 @@ staffApi.interceptors.response = mainClient.interceptors.response;
  */
 export const fetchConversationMessages = async () => {
     try {
-        // In development, use /api prefix due to proxy. In production, call directly
+        // In development, use /api prefix due to proxy. In production, call directly without /api prefix
         const endpoint = import.meta.env.DEV 
             ? '/api/UserChatHistory/All' 
-            : '/api/UserChatHistory/All';
+            : '/UserChatHistory/All';
         
         const response = await analyticsApi.get(endpoint);
         return response.data;
@@ -183,6 +183,35 @@ export const fetchDoctorDetails = async () => {
         console.error('Request details:', {
             baseURL: staffApi.defaults.baseURL,
             endpoint: import.meta.env.DEV ? '/api/Staff/GetDoctorDetails' : '/Staff/GetDoctorDetails',
+            environment: import.meta.env.DEV ? 'Development' : 'Production'
+        });
+        throw error;
+    }
+};
+
+/**
+ * Fetch leads data from BookNowClicks API
+ * @returns {Promise<Array>} - Array of leads data
+ */
+export const fetchLeads = async () => {
+    try {
+        // In development, proxy will handle the routing. In production, call directly
+        const endpoint = import.meta.env.DEV 
+            ? '/api/BookNowClicks/All'  // Use proxy in development
+            : '/BookNowClicks/All';     // Direct call in production
+        
+        console.log('Fetching leads from:', endpoint);
+        console.log('Analytics API Base URL:', analyticsApi.defaults.baseURL);
+        console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
+        
+        const response = await analyticsApi.get(endpoint);
+        console.log('Leads response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching leads:', error);
+        console.error('Request details:', {
+            baseURL: analyticsApi.defaults.baseURL,
+            endpoint: import.meta.env.DEV ? '/api/BookNowClicks/All' : '/BookNowClicks/All',
             environment: import.meta.env.DEV ? 'Development' : 'Production'
         });
         throw error;

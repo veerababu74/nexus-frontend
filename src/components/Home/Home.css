@@ -534,3 +534,140 @@
     margin-right: 0;
   }
 }
+
+/* Leads Modal Styles */
+.leads-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.leads-modal {
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.leads-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid;
+}
+
+.leads-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.leads-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lead-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lead-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.lead-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.lead-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lead-id {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.lead-timestamp {
+  font-size: 0.875rem;
+}
+
+.lead-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.leads-count {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.no-leads {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.no-leads p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Responsive styles for leads modal */
+@media (max-width: 768px) {
+  .leads-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+  
+  .leads-modal-header,
+  .leads-modal-content {
+    padding: 1rem;
+  }
+  
+  .lead-item {
+    padding: 0.75rem;
+  }
+  
+  .lead-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .lead-timestamp {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leads-modal {
+    width: 100%;
+    max-height: 90vh;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .leads-modal-header h2 {
+    font-size: 1.25rem;
+  }
+}

@@ -12,15 +12,19 @@ import {
   FiCpu
 } from 'react-icons/fi';
 import { ClipLoader } from 'react-spinners';
-import { fetchConversations, fetchAnalyticsSummary, fetchDoctorDetails } from '../../api/analyticsAPI';
+import { fetchConversations, fetchAnalyticsSummary, fetchDoctorDetails, fetchLeads } from '../../api/analyticsAPI';
 import './Home.css'; // Import Home styles
 
 const Home = () => {
   const { theme } = useTheme();
   const [showConversations, setShowConversations] = useState(false);
+  const [showLeads, setShowLeads] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [leadsLoading, setLeadsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [leadsError, setLeadsError] = useState(null);
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [doctorLoading, setDoctorLoading] = useState(true);
 
@@ -53,7 +57,7 @@ const Home = () => {
   const analyticsData = {
     conversations: conversations.length,
     selfServePercentage: '0%',
-    leads: 0,
+    leads: leads.length,
     incidents: 0,
     topQuestions: [],
     busyHours: '— wireframe —'
@@ -74,9 +78,29 @@ const Home = () => {
     }
   };
 
+  const fetchLeadsData = async () => {
+    setLeadsLoading(true);
+    setLeadsError(null);
+    try {
+      const leadsData = await fetchLeads();
+      setLeads(leadsData);
+    } catch (error) {
+      console.error('Error fetching leads:', error);
+      setLeadsError('Failed to load leads. Please try again.');
+      setLeads([]);
+    } finally {
+      setLeadsLoading(false);
+    }
+  };
+
   const handleConversationsClick = () => {
     setShowConversations(true);
     fetchConversationsData();
+  };
+
+  const handleLeadsClick = () => {
+    setShowLeads(true);
+    fetchLeadsData();
   };
 
   // Load conversation count on component mount
@@ -86,8 +110,8 @@ const Home = () => {
       console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
       
       try {
-        // Load conversations and doctor details in parallel
-        const [conversationsData, doctorData] = await Promise.all([
+        // Load conversations, doctor details, and leads in parallel
+        const [conversationsData, doctorData, leadsData] = await Promise.all([
           fetchConversations().catch(err => {
             console.error('Conversations API failed:', err);
             return [];
@@ -95,17 +119,24 @@ const Home = () => {
           fetchDoctorDetails().catch(err => {
             console.error('Doctor details API failed:', err);
             return null;
+          }),
+          fetchLeads().catch(err => {
+            console.error('Leads API failed:', err);
+            return [];
           })
         ]);
         
         console.log('Conversations loaded:', conversationsData?.length || 0, 'sessions');
         console.log('Doctor details loaded:', doctorData);
+        console.log('Leads loaded:', leadsData?.length || 0, 'leads');
         
         setConversations(conversationsData || []);
         setDoctorDetails(doctorData);
+        setLeads(leadsData || []);
       } catch (error) {
         console.error('Error fetching initial data:', error);
         setConversations([]);
+        setLeads([]);
         // Don't set doctor details to null on error, keep loading state
       } finally {
         setDoctorLoading(false);
@@ -376,6 +407,188 @@ const Home = () => {
     </div>
   );
 
+  const LeadsModal = () => (
+    <div 
+      className="leads-modal-overlay"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+      onClick={() => setShowLeads(false)}
+    >
+      <div 
+        className="leads-modal"
+        style={{ 
+          backgroundColor: theme.colors.background,
+          border: `1px solid ${theme.colors.border}`
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="leads-modal-header">
+          <div className="modal-header-content">
+            <h2 style={{ color: theme.colors.textPrimary }}>Leads</h2>
+            <span 
+              className="leads-count"
+              style={{ color: theme.colors.textSecondary }}
+            >
+              {leads.length} lead{leads.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <button 
+            className="close-button"
+            onClick={() => setShowLeads(false)}
+            style={{ 
+              background: 'none',
+              border: 'none',
+              color: theme.colors.textSecondary,
+              cursor: 'pointer'
+            }}
+          >
+            <FiX size={24} />
+          </button>
+        </div>
+        
+        <div className="leads-modal-content" style={{ position: 'relative' }}>
+          {leadsLoading && (
+            <div 
+              className="loading-overlay"
+              style={{ 
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10
+              }}
+            >
+              <ClipLoader
+                color={theme.colors.primary}
+                loading={leadsLoading}
+                size={50}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+              <p style={{ 
+                marginTop: '1rem', 
+                textAlign: 'center',
+                color: theme.colors.textPrimary,
+                fontSize: '1rem'
+              }}>
+                Loading leads...
+              </p>
+            </div>
+          )}
+          {leadsError ? (
+            <div 
+              className="error-message"
+              style={{ color: theme.colors.textSecondary }}
+            >
+              <FiAlertTriangle size={48} />
+              <p>{leadsError}</p>
+              <button 
+                onClick={fetchLeadsData}
+                className="retry-button"
+                style={{ 
+                  backgroundColor: theme.colors.primary,
+                  color: theme.colors.onPrimary,
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          ) : leads.length > 0 ? (
+            <div className="leads-list">
+              {leads.map((lead, index) => (
+                <div 
+                  key={lead.Id || index} 
+                  className="lead-item"
+                  style={{ 
+                    backgroundColor: theme.colors.surface,
+                    border: `1px solid ${theme.colors.border}`,
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '0.75rem'
+                  }}
+                >
+                  <div className="lead-header">
+                    <div className="lead-meta">
+                      <FiUsers 
+                        size={16} 
+                        style={{ color: theme.colors.primary }}
+                      />
+                      <span 
+                        className="lead-id"
+                        style={{ color: theme.colors.textPrimary, fontWeight: '600' }}
+                      >
+                        Lead #{lead.Id || index + 1}
+                      </span>
+                    </div>
+                    {lead.Timestamp && (
+                      <span 
+                        className="lead-timestamp"
+                        style={{ color: theme.colors.textSecondary }}
+                      >
+                        {new Date(lead.Timestamp).toLocaleDateString([], {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="lead-details" style={{ marginTop: '0.5rem' }}>
+                    {lead.UserChatSessionId && (
+                      <div className="lead-session">
+                        <span 
+                          style={{ color: theme.colors.textSecondary, fontSize: '0.9rem' }}
+                        >
+                          Session: {lead.UserChatSessionId}
+                        </span>
+                      </div>
+                    )}
+                    {lead.Click && (
+                      <div className="lead-click" style={{ marginTop: '0.25rem' }}>
+                        <span 
+                          style={{ color: theme.colors.textPrimary }}
+                        >
+                          Action: {lead.Click}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div 
+              className="no-leads"
+              style={{ 
+                color: theme.colors.textSecondary,
+                textAlign: 'center',
+                padding: '2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '1rem'
+              }}
+            >
+              <FiUsers size={48} />
+              <p>No leads found</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="home-container">
       {/* Hero Section */}
@@ -417,6 +630,7 @@ const Home = () => {
             title="Leads"
             value={analyticsData.leads}
             className="stat-leads"
+            onClick={handleLeadsClick}
           />
           <StatCard
             icon={FiAlertTriangle}
@@ -460,6 +674,7 @@ const Home = () => {
       </div>
 
       {showConversations && <ConversationModal />}
+      {showLeads && <LeadsModal />}
     </div>
   );
 };
