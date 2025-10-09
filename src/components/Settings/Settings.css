@@ -55,7 +55,7 @@
 
 .settings-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
 }
@@ -199,17 +199,17 @@
 .settings-actions {
     display: flex;
     justify-content: center;
+    gap: 1rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border);
 }
 
-.save-button {
+.save-button,
+.refresh-button {
     display: flex;
     align-items: center;
     gap: 0.6rem;
     padding: 0.8rem 2rem;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white;
     border: none;
     border-radius: 8px;
     font-size: 0.9rem;
@@ -222,9 +222,145 @@
     justify-content: center;
 }
 
-.save-button:hover {
+.save-button {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+.refresh-button {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.save-button:hover:not(:disabled),
+.refresh-button:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(24, 119, 242, 0.3);
+}
+
+.refresh-button:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+}
+
+.save-button:disabled,
+.refresh-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Status Badge */
+.toggle-display {
+    display: flex;
+    align-items: center;
+}
+
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.status-badge.inactive {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+}
+
+/* Logo Preview */
+.logo-preview {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-preview img {
+    object-fit: contain;
+}
+
+/* Loading and Error States */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    width: 100%;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    margin: 1rem 0;
+    text-align: center;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    color: #721c24;
+}
+
+.error-message p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.success-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    margin: 1rem 0;
+    text-align: center;
+    background: #d1edff;
+    border: 1px solid #bee5eb;
+    border-radius: 8px;
+    color: #0c5460;
+}
+
+.success-message p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.retry-button {
+    padding: 0.6rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+    background: var(--secondary);
+    transform: translateY(-1px);
 }
 
 .button-icon {
@@ -253,6 +389,16 @@
     .header-content h1 {
         font-size: 1.75rem;
     }
+    
+    .settings-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .save-button,
+    .refresh-button {
+        width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -279,8 +425,8 @@
         padding: 0.7rem 0.8rem;
     }
     
-    .save-button {
-        width: 100%;
+    .save-button,
+    .refresh-button {
         padding: 0.8rem 1.5rem;
     }
 }

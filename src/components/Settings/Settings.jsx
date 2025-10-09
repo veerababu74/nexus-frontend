@@ -1,28 +1,141 @@
-import React, { useState } from 'react';
-import { FiSettings, FiUser, FiShield } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiSettings, FiUser, FiShield, FiExternalLink, FiMail } from 'react-icons/fi';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getSettings, updateSettings } from '../../api/settingsAPI';
 import './Settings.css';
 
 const Settings = () => {
     const { theme } = useTheme();
-    const [clinicName, setClinicName] = useState('Deepak Pain Clinic');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    
+    // Settings state
+    const [clinicName, setClinicName] = useState('');
     const [brandColor, setBrandColor] = useState('#1877F2');
-    const [logo, setLogo] = useState('🏥');
-    const [privacyNoticeUrl, setPrivacyNoticeUrl] = useState('https://example.com/privacy');
+    const [logoUrl, setLogoUrl] = useState('');
+    const [privacyNoticeUrl, setPrivacyNoticeUrl] = useState('');
     const [retention, setRetention] = useState('90');
-    const [handoffEmails, setHandoffEmails] = useState('frontdesk@example.com');
+    const [handoffEmails, setHandoffEmails] = useState('');
+    
+    // New fields for the Book Now section
+    const [bookNowUrl, setBookNowUrl] = useState('');
+    const [bookNowLabel, setBookNowLabel] = useState('');
+    const [bookNowShow, setBookNowShow] = useState('');
+    const [sendAnEmailLabel, setSendAnEmailLabel] = useState('');
+    const [sendAnEmailShow, setSendAnEmailShow] = useState('');
 
-    const handleSave = () => {
-        console.log('Saving settings...', {
-            clinicName,
-            brandColor,
-            logo,
-            privacyNoticeUrl,
-            retention,
-            handoffEmails
-        });
-        alert('Settings saved successfully!');
+    // Fetch settings on component mount
+    useEffect(() => {
+        fetchSettings();
+    }, []);
+
+    const fetchSettings = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const settingsData = await getSettings();
+            
+            // Update state with API data
+            setClinicName(settingsData.ClinicName || '');
+            setBrandColor(settingsData.BrandColour || '#1877F2');
+            setLogoUrl(settingsData.LogoUrl || '');
+            setPrivacyNoticeUrl(settingsData.PrivacyNoticeUrl || '');
+            setRetention(settingsData.RetentionDays || '90');
+            setHandoffEmails(settingsData.HandOffEmails || '');
+            setBookNowUrl(settingsData.BookNowUrl || '');
+            setBookNowLabel(settingsData.BookNowLabel || '');
+            setBookNowShow(settingsData.BookNowShow || '');
+            setSendAnEmailLabel(settingsData.SendAnEmailLabel || '');
+            setSendAnEmailShow(settingsData.SendAnEmailShow || '');
+            
+        } catch (err) {
+            setError('Failed to load settings. Please try again.');
+            console.error('Error fetching settings:', err);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleSave = async () => {
+        try {
+            setSaving(true);
+            setError(null);
+            setSuccessMessage('');
+            
+            const settingsData = {
+                ClinicName: clinicName,
+                BrandColour: brandColor,
+                LogoUrl: logoUrl,
+                PrivacyNoticeUrl: privacyNoticeUrl,
+                RetentionDays: retention,
+                HandOffEmails: handoffEmails,
+                BookNowUrl: bookNowUrl,
+                BookNowLabel: bookNowLabel,
+                BookNowShow: bookNowShow,
+                SendAnEmailLabel: sendAnEmailLabel,
+                SendAnEmailShow: sendAnEmailShow
+            };
+            
+            console.log('Saving settings...', settingsData);
+            await updateSettings(settingsData);
+            
+            setSuccessMessage('Settings saved successfully!');
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+            
+        } catch (err) {
+            setError('Failed to save settings. Please try again.');
+            console.error('Error saving settings:', err);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleRefresh = () => {
+        fetchSettings();
+    };
+
+    if (loading) {
+        return (
+            <div className="settings-container">
+                <div className="settings-header">
+                    <div className="header-content">
+                        <h1>Settings</h1>
+                    </div>
+                </div>
+                <div className="settings-content">
+                    <div className="loading-container">
+                        <div className="loading-spinner">Loading settings...</div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="settings-container">
+                <div className="settings-header">
+                    <div className="header-content">
+                        <h1>Settings</h1>
+                    </div>
+                </div>
+                <div className="settings-content">
+                    <div className="error-message">
+                        <p>{error}</p>
+                        <button onClick={handleRefresh} className="retry-button">
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="settings-container">
@@ -66,14 +179,19 @@ const Settings = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Logo (emoji ok)</label>
+                            <label>Logo URL</label>
                             <input
-                                type="text"
-                                value={logo}
-                                onChange={(e) => setLogo(e.target.value)}
-                                className="form-input logo-input"
-                                placeholder="🏥"
+                                type="url"
+                                value={logoUrl}
+                                onChange={(e) => setLogoUrl(e.target.value)}
+                                className="form-input"
+                                placeholder="https://example.com/logo.png"
                             />
+                            {logoUrl && (
+                                <div className="logo-preview">
+                                    <img src={logoUrl} alt="Logo preview" style={{ maxWidth: '100px', maxHeight: '50px' }} />
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -121,12 +239,95 @@ const Settings = () => {
                             />
                         </div>
                     </div>
+
+                    {/* Book Now & Email Actions Section */}
+                    <div className="settings-section">
+                        <h2>
+                            <FiExternalLink className="section-icon" />
+                            Book Now & Email Actions
+                        </h2>
+
+                        <div className="form-group">
+                            <label>Book Now URL</label>
+                            <input
+                                type="url"
+                                value={bookNowUrl}
+                                onChange={(e) => setBookNowUrl(e.target.value)}
+                                className="form-input"
+                                placeholder="https://example.com/booking"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Book Now Label</label>
+                            <input
+                                type="text"
+                                value={bookNowLabel}
+                                onChange={(e) => setBookNowLabel(e.target.value)}
+                                className="form-input"
+                                placeholder="Book Now"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Book Now Visible</label>
+                            <select
+                                value={bookNowShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                onChange={(e) => setBookNowShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                className="form-select"
+                            >
+                                <option value="visible">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Send Email Label</label>
+                            <input
+                                type="text"
+                                value={sendAnEmailLabel}
+                                onChange={(e) => setSendAnEmailLabel(e.target.value)}
+                                className="form-input"
+                                placeholder="Send an email"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Send Email Visible</label>
+                            <select
+                                value={sendAnEmailShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                onChange={(e) => setSendAnEmailShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                className="form-select"
+                            >
+                                <option value="visible">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
+                {/* Success Message */}
+                {successMessage && (
+                    <div className="success-message">
+                        <p>{successMessage}</p>
+                    </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                    <div className="error-message">
+                        <p>{error}</p>
+                    </div>
+                )}
+
                 <div className="settings-actions">
-                    <button className="save-button" onClick={handleSave}>
+                    <button className="refresh-button" onClick={handleRefresh} disabled={saving}>
                         <FiSettings className="button-icon" />
-                        Save Settings
+                        Refresh Settings
+                    </button>
+                    <button className="save-button" onClick={handleSave} disabled={saving}>
+                        <FiSettings className="button-icon" />
+                        {saving ? 'Saving...' : 'Save Settings'}
                     </button>
                 </div>
             </div>
