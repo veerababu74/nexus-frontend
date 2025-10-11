@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { uploadDocument, deleteDocument, getAllKnowledgeRecords } from '../../api/documentAPI';
 import { useTheme } from '../../contexts/ThemeContext';
-import { FiUpload, FiFile, FiTrash2, FiLoader, FiCheck, FiX, FiSearch, FiFilter } from 'react-icons/fi';
+import { FiUpload, FiFile, FiTrash2, FiLoader, FiCheck, FiX, FiSearch, FiFilter, FiTag, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './FileManager.css';
 
 
@@ -16,12 +16,16 @@ const FileManager = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState({});
     const [message, setMessage] = useState('');
+    const [uploadTags, setUploadTags] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5);
     const fileInputRef = useRef(null);
 
     React.useEffect(() => {
         const fetchFiles = async () => {
             try {
                 const res = await getAllKnowledgeRecords();
+                console.log('Fetched knowledge records:', res);
                 if (res?.success && Array.isArray(res.response)) {
                     const mappedFiles = res.response.map(doc => ({
                         Title: doc.FileName ? doc.FileName.split('.')[0] : 'Untitled',
@@ -29,7 +33,7 @@ const FileManager = () => {
                         Hyperlink: doc.BlobUrl || '#',
                         Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : [],
                         FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
-                        CreatedOn: doc.CreatedDate || new Date().toISOString(),
+                        CreatedOn: doc.CreatedOn || '',
                     }));
                     setFiles(mappedFiles);
                 } else {
@@ -84,7 +88,7 @@ const FileManager = () => {
                 setUploadProgress({ ...progress });
                 
                 const index_name = 'test';
-                const tag = undefined;
+                const tag = uploadTags.trim() || undefined;
                 
                 // Simulate progress
                 const progressInterval = setInterval(() => {
@@ -106,7 +110,7 @@ const FileManager = () => {
                         Hyperlink: doc.BlobUrl || '#',
                         Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : ['uploaded'],
                         FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
-                        CreatedOn: new Date().toISOString(),
+                        CreatedOn: doc.CreatedDate || doc.CreatedOn || '',
                     };
                     setFiles(prev => [newFile, ...prev]);
                 } else {
@@ -122,6 +126,7 @@ const FileManager = () => {
         setIsUploading(false);
         setSelectedFiles([]);
         setUploadProgress({});
+        setUploadTags('');
         setMessage('Upload completed successfully!');
         
         // Reset file input
@@ -263,6 +268,22 @@ const FileManager = () => {
         return aStr.localeCompare(bStr);
     });
 
+    // Pagination logic
+    const totalFiles = sortedFiles.length;
+    const totalPages = Math.ceil(totalFiles / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedFiles = sortedFiles.slice(startIndex, endIndex);
+
+    // Reset to first page when search/filter changes
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, sortBy, sortOrder]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     const handleTagToggle = (tag) => {
         setSelectedTags(prev =>
             prev.includes(tag)
@@ -346,6 +367,39 @@ const FileManager = () => {
                             <span>Choose Files</span>
                             <small>Select documents to upload</small>
                         </label>
+                    </div>
+
+                    {/* Tags Input */}
+                    <div className="tags-input-container">
+                        <div className="tags-input-label">
+                            <FiTag size={16} style={{ color: theme.colors.primary }} />
+                            <span style={{ color: theme.colors.textPrimary }}>Tags (optional)</span>
+                        </div>
+                        <input
+                            type="text"
+                            className="tags-input"
+                            placeholder="Enter tags separated by commas (e.g., finance, report, 2024)"
+                            value={uploadTags}
+                            onChange={(e) => setUploadTags(e.target.value)}
+                            style={{
+                                backgroundColor: theme.colors.background,
+                                border: `1px solid ${theme.colors.border}`,
+                                color: theme.colors.textPrimary,
+                                borderRadius: '8px',
+                                padding: '0.75rem',
+                                fontSize: '0.9rem',
+                                width: '100%',
+                                boxSizing: 'border-box'
+                            }}
+                        />
+                        <small style={{ 
+                            color: theme.colors.textSecondary, 
+                            fontSize: '0.8rem',
+                            marginTop: '0.25rem',
+                            display: 'block'
+                        }}>
+                            Tags help organize and search documents. Separate multiple tags with commas.
+                        </small>
                     </div>
 
                     {/* Upload Button */}
@@ -512,22 +566,23 @@ const FileManager = () => {
                         <p>Try adjusting your filters or upload some documents</p>
                     </div>
                 ) : (
-                    <div className="grid-container" style={{
-                        backgroundColor: theme.colors.surface,
-                        border: `1px solid ${theme.colors.border}`
-                    }}>
-                        <div className="grid-header" style={{
-                            backgroundColor: theme.colors.hover,
-                            borderBottom: `1px solid ${theme.colors.border}`,
-                            color: theme.colors.textPrimary
+                    <>
+                        <div className="grid-container" style={{
+                            backgroundColor: theme.colors.surface,
+                            border: `1px solid ${theme.colors.border}`
                         }}>
-                            <div className="grid-cell">File Name</div>
-                            <div className="grid-cell">Created Date</div>
-                            <div className="grid-cell">Tags</div>
-                            <div className="grid-cell">Actions</div>
-                        </div>
+                            <div className="grid-header" style={{
+                                backgroundColor: theme.colors.hover,
+                                borderBottom: `1px solid ${theme.colors.border}`,
+                                color: theme.colors.textPrimary
+                            }}>
+                                <div className="grid-cell">File Name</div>
+                                <div className="grid-cell">Created Date</div>
+                                <div className="grid-cell">Tags</div>
+                                <div className="grid-cell">Actions</div>
+                            </div>
 
-                        {sortedFiles.map((file) => (
+                            {paginatedFiles.map((file) => (
                             <div 
                                 key={file.FileUniqueId} 
                                 className="grid-row"
@@ -594,6 +649,69 @@ const FileManager = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="pagination-container" style={{
+                            backgroundColor: theme.colors.background,
+                            borderTop: `1px solid ${theme.colors.border}`,
+                            padding: '1.5rem 2rem',
+                            borderRadius: '0 0 12px 12px'
+                        }}>
+                            <div className="pagination-info" style={{ color: theme.colors.textSecondary }}>
+                                Showing {startIndex + 1}-{Math.min(endIndex, totalFiles)} of {totalFiles} documents
+                            </div>
+                            <div className="pagination-controls">
+                                <button
+                                    className="pagination-btn"
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    style={{
+                                        backgroundColor: theme.colors.surface,
+                                        border: `1px solid ${theme.colors.border}`,
+                                        color: currentPage === 1 ? theme.colors.textSecondary : theme.colors.textPrimary,
+                                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    <FiChevronLeft size={16} />
+                                    Previous
+                                </button>
+
+                                <div className="page-numbers">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                        <button
+                                            key={page}
+                                            className={`page-number ${page === currentPage ? 'active' : ''}`}
+                                            onClick={() => handlePageChange(page)}
+                                            style={{
+                                                backgroundColor: page === currentPage ? theme.colors.primary : theme.colors.surface,
+                                                border: `1px solid ${page === currentPage ? theme.colors.primary : theme.colors.border}`,
+                                                color: page === currentPage ? theme.colors.onPrimary : theme.colors.textPrimary
+                                            }}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    className="pagination-btn"
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    style={{
+                                        backgroundColor: theme.colors.surface,
+                                        border: `1px solid ${theme.colors.border}`,
+                                        color: currentPage === totalPages ? theme.colors.textSecondary : theme.colors.textPrimary,
+                                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    Next
+                                    <FiChevronRight size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    </>
                 )}
             </div>
         </div>

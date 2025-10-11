@@ -175,7 +175,7 @@ const Sidebar = ({ isExpanded: parentExpanded, onToggle }) => {
                 className="logo-text"
                 style={{ color: theme.colors.primary }}
               >
-                Nexus
+                NSX Front door
               </h2>
             )}
           </div>
