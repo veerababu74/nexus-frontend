@@ -15,6 +15,7 @@ const Settings = () => {
     const [clinicName, setClinicName] = useState('');
     const [brandColor, setBrandColor] = useState('#1877F2');
     const [logoUrl, setLogoUrl] = useState('');
+    const [logoFile, setLogoFile] = useState(null);
     const [privacyNoticeUrl, setPrivacyNoticeUrl] = useState('');
     const [retention, setRetention] = useState('90');
     const [handoffEmails, setHandoffEmails] = useState('');
@@ -25,6 +26,14 @@ const Settings = () => {
     const [bookNowShow, setBookNowShow] = useState('');
     const [sendAnEmailLabel, setSendAnEmailLabel] = useState('');
     const [sendAnEmailShow, setSendAnEmailShow] = useState('');
+    
+    // New CTA Two fields
+    const [ctaTwoUrl, setCtaTwoUrl] = useState('');
+    const [ctaTwoLabel, setCtaTwoLabel] = useState('');
+    const [ctaTwoShow, setCtaTwoShow] = useState('');
+    
+    // Intro Message
+    const [introMessage, setIntroMessage] = useState('');
 
     // Fetch settings on component mount
     useEffect(() => {
@@ -49,6 +58,10 @@ const Settings = () => {
             setBookNowShow(settingsData.BookNowShow || '');
             setSendAnEmailLabel(settingsData.SendAnEmailLabel || '');
             setSendAnEmailShow(settingsData.SendAnEmailShow || '');
+            setCtaTwoUrl(settingsData.CTATwoUrl || '');
+            setCtaTwoLabel(settingsData.CTATwoLabel || '');
+            setCtaTwoShow(settingsData.CTATwoShow || '');
+            setIntroMessage(settingsData.IntroMessage || '');
             
         } catch (err) {
             setError('Failed to load settings. Please try again.');
@@ -64,24 +77,43 @@ const Settings = () => {
             setError(null);
             setSuccessMessage('');
             
-            const settingsData = {
-                ClinicName: clinicName,
-                BrandColour: brandColor,
-                LogoUrl: logoUrl,
-                PrivacyNoticeUrl: privacyNoticeUrl,
-                RetentionDays: retention,
-                HandOffEmails: handoffEmails,
-                BookNowUrl: bookNowUrl,
-                BookNowLabel: bookNowLabel,
-                BookNowShow: bookNowShow,
-                SendAnEmailLabel: sendAnEmailLabel,
-                SendAnEmailShow: sendAnEmailShow
-            };
+            // Create FormData for multipart/form-data submission
+            const formData = new FormData();
             
-            console.log('Saving settings...', settingsData);
-            await updateSettings(settingsData);
+            // Add all fields to FormData
+            formData.append('ClinicName', clinicName);
+            formData.append('BrandColour', brandColor);
+            formData.append('PrivacyNoticeUrl', privacyNoticeUrl);
+            formData.append('RetentionDays', retention);
+            formData.append('HandOffEmails', handoffEmails);
+            formData.append('BookNowUrl', bookNowUrl);
+            formData.append('BookNowLabel', bookNowLabel);
+            formData.append('BookNowShow', bookNowShow);
+            formData.append('SendAnEmailLabel', sendAnEmailLabel);
+            formData.append('SendAnEmailShow', sendAnEmailShow);
+            formData.append('CTATwoUrl', ctaTwoUrl);
+            formData.append('CTATwoLabel', ctaTwoLabel);
+            formData.append('CTATwoShow', ctaTwoShow);
+            formData.append('IntroMessage', introMessage);
+            
+            // Add logo file if selected
+            if (logoFile) {
+                formData.append('WidgetAvatar', logoFile);
+            }
+            
+            console.log('Saving settings...');
+            const response = await updateSettings(formData);
+            
+            // If a new logo was uploaded, update the logoUrl with the response
+            if (response && typeof response === 'string') {
+                // Assuming the response contains the new logo URL
+                setLogoUrl(response);
+            }
             
             setSuccessMessage('Settings saved successfully!');
+            
+            // Clear the file input after successful upload
+            setLogoFile(null);
             
             // Clear success message after 3 seconds
             setTimeout(() => {
@@ -98,6 +130,16 @@ const Settings = () => {
 
     const handleRefresh = () => {
         fetchSettings();
+    };
+
+    const handleLogoUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setLogoFile(file);
+            // Create a temporary URL for preview
+            const previewUrl = URL.createObjectURL(file);
+            setLogoUrl(previewUrl);
+        }
     };
 
     if (loading) {
@@ -179,19 +221,29 @@ const Settings = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Logo URL</label>
+                            <label>Logo Upload</label>
                             <input
-                                type="url"
-                                value={logoUrl}
-                                onChange={(e) => setLogoUrl(e.target.value)}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoUpload}
                                 className="form-input"
-                                placeholder="https://example.com/logo.png"
                             />
                             {logoUrl && (
                                 <div className="logo-preview">
-                                    <img src={logoUrl} alt="Logo preview" style={{ maxWidth: '100px', maxHeight: '50px' }} />
+                                    <img src={logoUrl} alt="Logo preview" style={{ maxWidth: '200px', maxHeight: '100px', objectFit: 'contain' }} />
                                 </div>
                             )}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Intro Message</label>
+                            <textarea
+                                value={introMessage}
+                                onChange={(e) => setIntroMessage(e.target.value)}
+                                className="form-textarea"
+                                placeholder="Enter introduction message for your chat widget"
+                                rows="3"
+                            />
                         </div>
                     </div>
 
@@ -240,11 +292,11 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    {/* Book Now & Email Actions Section */}
+                    {/* Action Buttons Section */}
                     <div className="settings-section">
                         <h2>
                             <FiExternalLink className="section-icon" />
-                            Book Now & Email Actions
+                            Action Buttons
                         </h2>
 
                         <div className="form-group">
@@ -297,6 +349,40 @@ const Settings = () => {
                             <select
                                 value={sendAnEmailShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
                                 onChange={(e) => setSendAnEmailShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                className="form-select"
+                            >
+                                <option value="visible">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>CTA Two URL</label>
+                            <input
+                                type="url"
+                                value={ctaTwoUrl}
+                                onChange={(e) => setCtaTwoUrl(e.target.value)}
+                                className="form-input"
+                                placeholder="https://example.com/action"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>CTA Two Label</label>
+                            <input
+                                type="text"
+                                value={ctaTwoLabel}
+                                onChange={(e) => setCtaTwoLabel(e.target.value)}
+                                className="form-input"
+                                placeholder="Custom Action"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>CTA Two Visible</label>
+                            <select
+                                value={ctaTwoShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                onChange={(e) => setCtaTwoShow(e.target.value === 'visible' ? 'True' : 'False')}
                                 className="form-select"
                             >
                                 <option value="visible">Visible</option>

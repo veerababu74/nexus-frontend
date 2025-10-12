@@ -27,7 +27,7 @@ export const getSettings = async () => {
 
 /**
  * Update settings (save settings to the API)
- * @param {Object} settingsData - Settings data to update
+ * @param {Object|FormData} settingsData - Settings data to update (can be FormData for file uploads)
  * @returns {Promise<Object>} Updated settings data
  */
 export const updateSettings = async (settingsData) => {
@@ -35,6 +35,13 @@ export const updateSettings = async (settingsData) => {
     // Use different endpoints for development and production
     const endpoint = import.meta.env.DEV ? '/api/Settings/Save' : '/Settings/Save';
     const config = import.meta.env.DEV ? {} : { baseURL: API_ENDPOINTS.ANALYTICS };
+    
+    // If settingsData is FormData (contains file upload), use different content type
+    if (settingsData instanceof FormData) {
+      config.headers = {
+        'Content-Type': 'multipart/form-data'
+      };
+    }
     
     const response = await api.put(endpoint, settingsData, config);
     
