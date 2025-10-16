@@ -1,5 +1,36 @@
 import { api } from '../utils/apiClient';
+import axios from 'axios';
+import { getAccessTokenCookie, isTokenExpired } from '../utils/cookieUtils';
 import '../config/apiConfig'; // Initialize API configuration
+
+// Knowledge API base URL
+const KNOWLEDGE_API_BASE_URL = 'https://neurax-net-f2cwbugzh4gqd8hg.uksouth-01.azurewebsites.net';
+
+// Create a specific axios instance for knowledge API
+const knowledgeApiClient = axios.create({
+  baseURL: KNOWLEDGE_API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add request interceptor for authentication
+knowledgeApiClient.interceptors.request.use(
+  (config) => {
+    const token = getAccessTokenCookie();
+    
+    if (token && !isTokenExpired(token)) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    return config;
+  },
+  (error) => {
+    console.error('Knowledge API request interceptor error:', error);
+    return Promise.reject(error);
+  }
+);
 
 export const uploadDocument = async ({ file, index_name, tag }) => {
     const formData = new FormData();
@@ -53,10 +84,10 @@ export const deleteDocument = async ({ index_name, file_unique_id }) => {
 export const getAllKnowledgeRecords = async () => {
     try {
         // The JWT token is automatically added by the API client interceptors
-        // Headers will include: Authorization: Bearer <token>, Content-Type: application/json
-        const response = await api.get('/nexusai/knowledge/all');
+        const response = await knowledgeApiClient.get('/Knowledge/All');
         return response.data;
     } catch (error) {
+        console.error('Error fetching knowledge records:', error);
         if (error.response) {
             return error.response.data;
         }

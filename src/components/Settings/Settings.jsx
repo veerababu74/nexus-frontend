@@ -14,6 +14,7 @@ const Settings = () => {
     // Settings state
     const [clinicName, setClinicName] = useState('');
     const [brandColor, setBrandColor] = useState('#1877F2');
+    const [textColor, setTextColor] = useState('');
     const [logoUrl, setLogoUrl] = useState('');
     const [logoFile, setLogoFile] = useState(null);
     const [privacyNoticeUrl, setPrivacyNoticeUrl] = useState('');
@@ -49,6 +50,7 @@ const Settings = () => {
             // Update state with API data
             setClinicName(settingsData.ClinicName || '');
             setBrandColor(settingsData.BrandColour || '#1877F2');
+            setTextColor(settingsData.TextColour || '');
             setLogoUrl(settingsData.LogoUrl || '');
             setPrivacyNoticeUrl(settingsData.PrivacyNoticeUrl || '');
             setRetention(settingsData.RetentionDays || '90');
@@ -83,6 +85,7 @@ const Settings = () => {
             // Add all fields to FormData
             formData.append('ClinicName', clinicName);
             formData.append('BrandColour', brandColor);
+            formData.append('TextColour', textColor);
             formData.append('PrivacyNoticeUrl', privacyNoticeUrl);
             formData.append('RetentionDays', retention);
             formData.append('HandOffEmails', handoffEmails);
@@ -217,6 +220,19 @@ const Settings = () => {
                                     className="color-input"
                                 />
                                 <div className="color-preview" style={{ backgroundColor: brandColor }}></div>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Text color</label>
+                            <div className="color-input-wrapper">
+                                <input
+                                    type="color"
+                                    value={textColor}
+                                    onChange={(e) => setTextColor(e.target.value)}
+                                    className="color-input"
+                                />
+                                <div className="color-preview" style={{ backgroundColor: textColor }}></div>
                             </div>
                         </div>
 

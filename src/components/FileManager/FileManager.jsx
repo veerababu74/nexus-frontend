@@ -26,14 +26,31 @@ const FileManager = () => {
             try {
                 const res = await getAllKnowledgeRecords();
                 console.log('Fetched knowledge records:', res);
-                if (res?.success && Array.isArray(res.response)) {
-                    const mappedFiles = res.response.map(doc => ({
+                
+                // Updated to handle the new API response structure
+                if (Array.isArray(res)) {
+                    const mappedFiles = res.map(doc => ({
+                        Id: doc.Id || '',
                         Title: doc.FileName ? doc.FileName.split('.')[0] : 'Untitled',
                         FileName: doc.FileName || 'Unknown',
                         Hyperlink: doc.BlobUrl || '#',
                         Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : [],
                         FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
                         CreatedOn: doc.CreatedOn || '',
+                        Status: doc.Status || 'Unknown',
+                    }));
+                    setFiles(mappedFiles);
+                } else if (res?.success && Array.isArray(res.response)) {
+                    // Fallback for old response structure
+                    const mappedFiles = res.response.map(doc => ({
+                        Id: doc.Id || '',
+                        Title: doc.FileName ? doc.FileName.split('.')[0] : 'Untitled',
+                        FileName: doc.FileName || 'Unknown',
+                        Hyperlink: doc.BlobUrl || '#',
+                        Tags: doc.Tags ? doc.Tags.split(',').filter(tag => tag.trim()) : [],
+                        FileUniqueId: doc.FileUniqueId || `temp-${Date.now()}`,
+                        CreatedOn: doc.CreatedOn || '',
+                        Status: doc.Status || 'Unknown',
                     }));
                     setFiles(mappedFiles);
                 } else {
@@ -525,6 +542,7 @@ const FileManager = () => {
                             <option value="Title">Sort by Title</option>
                             <option value="FileName">Sort by File Name</option>
                             <option value="CreatedOn">Sort by Date</option>
+                            <option value="Status">Sort by Status</option>
                         </select>
                         <button
                             className="sort-order-btn"
@@ -578,6 +596,7 @@ const FileManager = () => {
                             }}>
                                 <div className="grid-cell">File Name</div>
                                 <div className="grid-cell">Created Date</div>
+                                <div className="grid-cell">Status</div>
                                 <div className="grid-cell">Tags</div>
                                 <div className="grid-cell">Actions</div>
                             </div>
@@ -602,6 +621,26 @@ const FileManager = () => {
                                 <div className="grid-cell date-cell">
                                     <span style={{ color: theme.colors.textSecondary }}>
                                         {formatDate(file.CreatedOn)}
+                                    </span>
+                                </div>
+                                <div className="grid-cell status-cell">
+                                    <span 
+                                        className={`status-badge status-${file.Status.toLowerCase()}`}
+                                        style={{
+                                            backgroundColor: file.Status === 'Completed' ? '#10b981' : 
+                                                           file.Status === 'InProgress' ? '#f59e0b' : 
+                                                           file.Status === 'Failed' ? '#ef4444' : theme.colors.hover,
+                                            color: file.Status === 'Completed' || file.Status === 'InProgress' || file.Status === 'Failed' ? 'white' : theme.colors.textPrimary,
+                                            border: `1px solid ${file.Status === 'Completed' ? '#10b981' : 
+                                                                file.Status === 'InProgress' ? '#f59e0b' : 
+                                                                file.Status === 'Failed' ? '#ef4444' : theme.colors.border}`,
+                                            padding: '4px 8px',
+                                            borderRadius: '12px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: '500'
+                                        }}
+                                    >
+                                        {file.Status}
                                     </span>
                                 </div>
                                 <div className="grid-cell tags-cell">

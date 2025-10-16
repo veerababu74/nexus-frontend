@@ -12,7 +12,8 @@ import {
   FiCpu
 } from 'react-icons/fi';
 import { ClipLoader } from 'react-spinners';
-import { fetchConversations, fetchAnalyticsSummary, fetchDoctorDetails, fetchLeads } from '../../api/analyticsAPI';
+import { fetchConversations, fetchDoctorDetails, fetchLeads } from '../../api/analyticsAPI';
+import { getDashboardResults } from '../../api/dashboardAPI';
 import './Home.css'; // Import Home styles
 
 const Home = () => {
@@ -27,6 +28,14 @@ const Home = () => {
   const [leadsError, setLeadsError] = useState(null);
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [doctorLoading, setDoctorLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState({
+    LeedsCount: '0',
+    ConversationCount: '0',
+    SelfServe: '0',
+    Incidents: '0'
+  });
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState(null);
 
   // Typing animation component
   const TypingAnimation = () => {
@@ -55,10 +64,10 @@ const Home = () => {
   };
 
   const analyticsData = {
-    conversations: conversations.length,
-    selfServePercentage: '0%',
-    leads: leads.length,
-    incidents: 0,
+    conversations: dashboardData.ConversationCount,
+    selfServePercentage: `${dashboardData.SelfServe}%`,
+    leads: dashboardData.LeedsCount,
+    incidents: dashboardData.Incidents,
     topQuestions: [],
     busyHours: '— wireframe —'
   };
@@ -93,6 +102,26 @@ const Home = () => {
     }
   };
 
+  const fetchDashboardData = async () => {
+    setDashboardLoading(true);
+    setDashboardError(null);
+    try {
+      const data = await getDashboardResults();
+      setDashboardData(data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setDashboardError('Failed to load dashboard data. Please try again.');
+      setDashboardData({
+        LeedsCount: '0',
+        ConversationCount: '0',
+        SelfServe: '0',
+        Incidents: '0'
+      });
+    } finally {
+      setDashboardLoading(false);
+    }
+  };
+
   const handleConversationsClick = () => {
     setShowConversations(true);
     fetchConversationsData();
@@ -110,8 +139,17 @@ const Home = () => {
       console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
       
       try {
-        // Load conversations, doctor details, and leads in parallel
-        const [conversationsData, doctorData, leadsData] = await Promise.all([
+        // Load dashboard data, conversations, doctor details, and leads in parallel
+        const [dashboardResult, conversationsData, doctorData, leadsData] = await Promise.all([
+          getDashboardResults().catch(err => {
+            console.error('Dashboard API failed:', err);
+            return {
+              LeedsCount: '0',
+              ConversationCount: '0',
+              SelfServe: '0',
+              Incidents: '0'
+            };
+          }),
           fetchConversations().catch(err => {
             console.error('Conversations API failed:', err);
             return [];
@@ -126,20 +164,29 @@ const Home = () => {
           })
         ]);
         
+        console.log('Dashboard data loaded:', dashboardResult);
         console.log('Conversations loaded:', conversationsData?.length || 0, 'sessions');
         console.log('Doctor details loaded:', doctorData);
         console.log('Leads loaded:', leadsData?.length || 0, 'leads');
         
+        setDashboardData(dashboardResult);
         setConversations(conversationsData || []);
         setDoctorDetails(doctorData);
         setLeads(leadsData || []);
       } catch (error) {
         console.error('Error fetching initial data:', error);
+        setDashboardData({
+          LeedsCount: '0',
+          ConversationCount: '0',
+          SelfServe: '0',
+          Incidents: '0'
+        });
         setConversations([]);
         setLeads([]);
         // Don't set doctor details to null on error, keep loading state
       } finally {
         setDoctorLoading(false);
+        setDashboardLoading(false);
       }
     };
 
