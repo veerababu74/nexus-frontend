@@ -227,16 +227,19 @@ const FileManager = () => {
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         try {
-            return new Date(dateString).toLocaleString('en-US', {
+            return new Date(dateString).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+                day: 'numeric'
             });
         } catch (error) {
             return 'Invalid Date';
         }
+    };
+
+    const truncateFileName = (fileName, maxLength = 15) => {
+        if (fileName.length <= maxLength) return fileName;
+        return fileName.substring(0, maxLength) + '...';
     };
 
     const getFileIcon = (fileName) => {
@@ -596,9 +599,9 @@ const FileManager = () => {
                             }}>
                                 <div className="grid-cell">File Name</div>
                                 <div className="grid-cell">Created Date</div>
-                                <div className="grid-cell">Status</div>
                                 <div className="grid-cell">Tags</div>
                                 <div className="grid-cell">Actions</div>
+                                <div className="grid-cell">Status</div>
                             </div>
 
                             {paginatedFiles.map((file) => (
@@ -614,33 +617,17 @@ const FileManager = () => {
                             >
                                 <div className="grid-cell file-info">
                                     <span className="file-icon">{getFileIcon(file.FileName)}</span>
-                                    <span className="file-name" style={{ color: theme.colors.textPrimary }}>
-                                        {file.FileName}
+                                    <span 
+                                        className="file-name" 
+                                        style={{ color: theme.colors.textPrimary }}
+                                        title={file.FileName}
+                                    >
+                                        {truncateFileName(file.FileName)}
                                     </span>
                                 </div>
                                 <div className="grid-cell date-cell">
                                     <span style={{ color: theme.colors.textSecondary }}>
                                         {formatDate(file.CreatedOn)}
-                                    </span>
-                                </div>
-                                <div className="grid-cell status-cell">
-                                    <span 
-                                        className={`status-badge status-${file.Status.toLowerCase()}`}
-                                        style={{
-                                            backgroundColor: file.Status === 'Completed' ? '#10b981' : 
-                                                           file.Status === 'InProgress' ? '#f59e0b' : 
-                                                           file.Status === 'Failed' ? '#ef4444' : theme.colors.hover,
-                                            color: file.Status === 'Completed' || file.Status === 'InProgress' || file.Status === 'Failed' ? 'white' : theme.colors.textPrimary,
-                                            border: `1px solid ${file.Status === 'Completed' ? '#10b981' : 
-                                                                file.Status === 'InProgress' ? '#f59e0b' : 
-                                                                file.Status === 'Failed' ? '#ef4444' : theme.colors.border}`,
-                                            padding: '4px 8px',
-                                            borderRadius: '12px',
-                                            fontSize: '0.75rem',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {file.Status}
                                     </span>
                                 </div>
                                 <div className="grid-cell tags-cell">
@@ -684,6 +671,26 @@ const FileManager = () => {
                                         <FiTrash2 size={14} />
                                         Delete
                                     </button>
+                                </div>
+                                <div className="grid-cell status-cell">
+                                    <span 
+                                        className={`status-badge status-${file.Status.toLowerCase()}`}
+                                        style={{
+                                            backgroundColor: file.Status === 'Completed' ? '#10b981' : 
+                                                           file.Status === 'InProgress' ? '#f59e0b' : 
+                                                           file.Status === 'Failed' ? '#ef4444' : theme.colors.hover,
+                                            color: file.Status === 'Completed' || file.Status === 'InProgress' || file.Status === 'Failed' ? 'white' : theme.colors.textPrimary,
+                                            border: `1px solid ${file.Status === 'Completed' ? '#10b981' : 
+                                                                file.Status === 'InProgress' ? '#f59e0b' : 
+                                                                file.Status === 'Failed' ? '#ef4444' : theme.colors.border}`,
+                                            padding: '4px 8px',
+                                            borderRadius: '12px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: '500'
+                                        }}
+                                    >
+                                        {file.Status}
+                                    </span>
                                 </div>
                             </div>
                         ))}

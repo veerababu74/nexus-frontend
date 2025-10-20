@@ -430,7 +430,7 @@
 
 .grid-header {
     display: grid;
-    grid-template-columns: 2fr 2fr 1.5fr 1.5fr;
+    grid-template-columns: 3fr 1.5fr 2fr 1.5fr 1fr;
     gap: 1rem;
     padding: 1rem;
     font-weight: 600;
@@ -444,7 +444,7 @@
 
 .grid-row {
     display: grid;
-    grid-template-columns: 2fr 2fr 1.5fr 1.5fr;
+    grid-template-columns: 3fr 1.5fr 2fr 1.5fr 1fr;
     gap: 1rem;
     padding: 1rem;
     transition: all 0.3s ease;
@@ -495,12 +495,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
+    cursor: default;
 }
 
 .tags-cell {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
+    align-items: flex-start;
+    min-height: 1.5rem;
 }
 
 .file-tag {
@@ -548,7 +552,7 @@
 @media (max-width: 1200px) {
     .grid-header,
     .grid-row {
-        grid-template-columns: 2fr 2fr 1.5fr 1fr;
+        grid-template-columns: 3fr 1.5fr 2fr 1fr 1fr;
         gap: 0.75rem;
     }
 }
@@ -623,7 +627,7 @@
     
     .grid-header,
     .grid-row {
-        grid-template-columns: 2fr 1.5fr 1fr;
+        grid-template-columns: 3fr 1.5fr 2fr;
         gap: 0.5rem;
     }
     

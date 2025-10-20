@@ -37,6 +37,28 @@ const Home = () => {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState(null);
 
+  // Helper function to sort conversations by latest timestamp (newest first)
+  const sortConversationsByLatest = (conversationsData) => {
+    return (conversationsData || []).sort((a, b) => {
+      // Get the latest timestamp from each conversation
+      const getLatestTimestamp = (conversation) => {
+        if (!conversation || conversation.length === 0) return new Date(0);
+        
+        const timestamps = conversation
+          .map(msg => msg.Timestamp)
+          .filter(timestamp => timestamp)
+          .map(timestamp => new Date(timestamp));
+        
+        return timestamps.length > 0 ? Math.max(...timestamps) : new Date(0);
+      };
+      
+      const latestA = getLatestTimestamp(a);
+      const latestB = getLatestTimestamp(b);
+      
+      return latestB - latestA; // Descending order (newest first)
+    });
+  };
+
   // Typing animation component
   const TypingAnimation = () => {
     const [dots, setDots] = useState('');
@@ -77,7 +99,8 @@ const Home = () => {
     setError(null);
     try {
       const conversationsData = await fetchConversations();
-      setConversations(conversationsData);
+      const sortedConversations = sortConversationsByLatest(conversationsData);
+      setConversations(sortedConversations);
     } catch (error) {
       console.error('Error fetching conversations:', error);
       setError('Failed to load conversations. Please try again.');
@@ -170,7 +193,10 @@ const Home = () => {
         console.log('Leads loaded:', leadsData?.length || 0, 'leads');
         
         setDashboardData(dashboardResult);
-        setConversations(conversationsData || []);
+        
+        // Sort conversations by latest timestamp in descending order (newest first)
+        const sortedConversations = sortConversationsByLatest(conversationsData);
+        setConversations(sortedConversations);
         setDoctorDetails(doctorData);
         setLeads(leadsData || []);
       } catch (error) {
