@@ -217,3 +217,32 @@ export const fetchLeads = async () => {
         throw error;
     }
 };
+
+/**
+ * Fetch top questions data
+ * @returns {Promise<Array>} - Array of top questions
+ */
+export const fetchTopQuestions = async () => {
+    try {
+        // In development, proxy will handle the routing. In production, call directly
+        const endpoint = import.meta.env.DEV 
+            ? '/api/UserChatHistory/GetTopQuestions'  // Use proxy in development
+            : '/UserChatHistory/GetTopQuestions';     // Direct call in production
+        
+        console.log('Fetching top questions from:', endpoint);
+        console.log('Analytics API Base URL:', analyticsApi.defaults.baseURL);
+        console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
+        
+        const response = await analyticsApi.get(endpoint);
+        console.log('Top questions response:', response.data);
+        return response.data || [];
+    } catch (error) {
+        console.error('Error fetching top questions:', error);
+        console.error('Request details:', {
+            baseURL: analyticsApi.defaults.baseURL,
+            endpoint: import.meta.env.DEV ? '/api/UserChatHistory/GetTopQuestions' : '/UserChatHistory/GetTopQuestions',
+            environment: import.meta.env.DEV ? 'Development' : 'Production'
+        });
+        throw error;
+    }
+};

@@ -21,14 +21,14 @@ const Settings = () => {
     const [retention, setRetention] = useState('90');
     const [handoffEmails, setHandoffEmails] = useState('');
     
-    // New fields for the Book Now section
-    const [bookNowUrl, setBookNowUrl] = useState('');
-    const [bookNowLabel, setBookNowLabel] = useState('');
-    const [bookNowShow, setBookNowShow] = useState('');
-    const [sendAnEmailLabel, setSendAnEmailLabel] = useState('');
-    const [sendAnEmailShow, setSendAnEmailShow] = useState('');
+    // CTA Buttons section fields
+    const [bookNowUrl, setBookNowUrl] = useState(''); // CTA One URL
+    const [bookNowLabel, setBookNowLabel] = useState(''); // CTA One Label
+    const [bookNowShow, setBookNowShow] = useState(''); // CTA One Visible
+    const [sendAnEmailLabel, setSendAnEmailLabel] = useState(''); // Send Email Label
+    const [sendAnEmailShow, setSendAnEmailShow] = useState(''); // Send Email Visible
     
-    // New CTA Two fields
+    // CTA Two fields
     const [ctaTwoUrl, setCtaTwoUrl] = useState('');
     const [ctaTwoLabel, setCtaTwoLabel] = useState('');
     const [ctaTwoShow, setCtaTwoShow] = useState('');
@@ -308,15 +308,15 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    {/* Action Buttons Section */}
+                    {/* CTA Buttons Section */}
                     <div className="settings-section">
                         <h2>
                             <FiExternalLink className="section-icon" />
-                            Action Buttons
+                            CTA Buttons
                         </h2>
 
                         <div className="form-group">
-                            <label>Book Now URL</label>
+                            <label>CTA One URL</label>
                             <input
                                 type="url"
                                 value={bookNowUrl}
@@ -327,7 +327,7 @@ const Settings = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Book Now Label</label>
+                            <label>CTA One Label</label>
                             <input
                                 type="text"
                                 value={bookNowLabel}
@@ -338,33 +338,10 @@ const Settings = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Book Now Visible</label>
+                            <label>CTA One Visible</label>
                             <select
                                 value={bookNowShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
                                 onChange={(e) => setBookNowShow(e.target.value === 'visible' ? 'True' : 'False')}
-                                className="form-select"
-                            >
-                                <option value="visible">Visible</option>
-                                <option value="hidden">Hidden</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Send Email Label</label>
-                            <input
-                                type="text"
-                                value={sendAnEmailLabel}
-                                onChange={(e) => setSendAnEmailLabel(e.target.value)}
-                                className="form-input"
-                                placeholder="Send an email"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Send Email Visible</label>
-                            <select
-                                value={sendAnEmailShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
-                                onChange={(e) => setSendAnEmailShow(e.target.value === 'visible' ? 'True' : 'False')}
                                 className="form-select"
                             >
                                 <option value="visible">Visible</option>
@@ -399,6 +376,29 @@ const Settings = () => {
                             <select
                                 value={ctaTwoShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
                                 onChange={(e) => setCtaTwoShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                className="form-select"
+                            >
+                                <option value="visible">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Send Email Label</label>
+                            <input
+                                type="text"
+                                value={sendAnEmailLabel}
+                                onChange={(e) => setSendAnEmailLabel(e.target.value)}
+                                className="form-input"
+                                placeholder="Send an email"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Send Email Visible</label>
+                            <select
+                                value={sendAnEmailShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                onChange={(e) => setSendAnEmailShow(e.target.value === 'visible' ? 'True' : 'False')}
                                 className="form-select"
                             >
                                 <option value="visible">Visible</option>

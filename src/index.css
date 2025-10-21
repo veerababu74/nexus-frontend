@@ -1,11 +1,11 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #1d1d1f;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,34 +13,34 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Facebook Light Theme Variables */
+/* Apple Light Theme Variables */
 [data-theme="light"] {
-  --background: #FFFFFF;
-  --surface: #F0F2F5;
-  --primary: #1877F2;
-  --primary-hover: #166fe5;
-  --secondary: #42B883;
-  --on-primary: #FFFFFF;
-  --text: #1C1E21;
-  --text-secondary: #65676B;
-  --border: #DADDE1;
-  --accent: #E7F3FF;
-  --hover: #F2F3F5;
+  --background: #ffffff;
+  --surface: #f5f5f7;
+  --primary: #0066cc;
+  --primary-hover: #0052a3;
+  --secondary: #0066cc;
+  --on-primary: #ffffff;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --border: #d2d2d7;
+  --accent: #e6f3ff;
+  --hover: #f5f5f7;
 }
 
-/* Facebook Dark Theme Variables */
+/* Apple Dark Theme Variables */
 [data-theme="dark"] {
-  --background: #18191A;
-  --surface: #242526;
-  --primary: #1877F2;
-  --primary-hover: #166fe5;
-  --secondary: #42B883;
-  --on-primary: #FFFFFF;
-  --text: #E4E6EA;
-  --text-secondary: #B0B3B8;
-  --border: #3A3B3C;
-  --accent: #E7F3FF;
-  --hover: #303031;
+  --background: #1d1d1f;
+  --surface: #2c2c2e;
+  --primary: #0066cc;
+  --primary-hover: #0052a3;
+  --secondary: #0066cc;
+  --on-primary: #ffffff;
+  --text: #ffffff;
+  --text-secondary: #a1a1a6;
+  --border: #38383a;
+  --accent: #e6f3ff;
+  --hover: #38383a;
 }
 
 a {

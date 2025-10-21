@@ -12,7 +12,7 @@ import {
   FiCpu
 } from 'react-icons/fi';
 import { ClipLoader } from 'react-spinners';
-import { fetchConversations, fetchDoctorDetails, fetchLeads } from '../../api/analyticsAPI';
+import { fetchConversations, fetchDoctorDetails, fetchLeads, fetchTopQuestions } from '../../api/analyticsAPI';
 import { getDashboardResults } from '../../api/dashboardAPI';
 import './Home.css'; // Import Home styles
 
@@ -36,6 +36,9 @@ const Home = () => {
   });
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState(null);
+  const [topQuestions, setTopQuestions] = useState([]);
+  const [topQuestionsLoading, setTopQuestionsLoading] = useState(true);
+  const [topQuestionsError, setTopQuestionsError] = useState(null);
 
   // Helper function to sort conversations by latest timestamp (newest first)
   const sortConversationsByLatest = (conversationsData) => {
@@ -90,7 +93,7 @@ const Home = () => {
     selfServePercentage: `${dashboardData.SelfServe}%`,
     leads: dashboardData.LeedsCount,
     incidents: dashboardData.Incidents,
-    topQuestions: [],
+    topQuestions: topQuestions,
     busyHours: '— wireframe —'
   };
 
@@ -162,8 +165,8 @@ const Home = () => {
       console.log('Environment:', import.meta.env.DEV ? 'Development' : 'Production');
       
       try {
-        // Load dashboard data, conversations, doctor details, and leads in parallel
-        const [dashboardResult, conversationsData, doctorData, leadsData] = await Promise.all([
+        // Load dashboard data, conversations, doctor details, leads, and top questions in parallel
+        const [dashboardResult, conversationsData, doctorData, leadsData, topQuestionsData] = await Promise.all([
           getDashboardResults().catch(err => {
             console.error('Dashboard API failed:', err);
             return {
@@ -184,6 +187,10 @@ const Home = () => {
           fetchLeads().catch(err => {
             console.error('Leads API failed:', err);
             return [];
+          }),
+          fetchTopQuestions().catch(err => {
+            console.error('Top questions API failed:', err);
+            return [];
           })
         ]);
         
@@ -191,6 +198,7 @@ const Home = () => {
         console.log('Conversations loaded:', conversationsData?.length || 0, 'sessions');
         console.log('Doctor details loaded:', doctorData);
         console.log('Leads loaded:', leadsData?.length || 0, 'leads');
+        console.log('Top questions loaded:', topQuestionsData?.length || 0, 'questions');
         
         setDashboardData(dashboardResult);
         
@@ -199,6 +207,7 @@ const Home = () => {
         setConversations(sortedConversations);
         setDoctorDetails(doctorData);
         setLeads(leadsData || []);
+        setTopQuestions(topQuestionsData || []);
       } catch (error) {
         console.error('Error fetching initial data:', error);
         setDashboardData({
@@ -209,10 +218,12 @@ const Home = () => {
         });
         setConversations([]);
         setLeads([]);
+        setTopQuestions([]);
         // Don't set doctor details to null on error, keep loading state
       } finally {
         setDoctorLoading(false);
         setDashboardLoading(false);
+        setTopQuestionsLoading(false);
       }
     };
 
@@ -718,10 +729,17 @@ const Home = () => {
           <InfoCard
             title="Top questions"
             content={
-              analyticsData.topQuestions.length > 0 ? (
+              topQuestionsLoading ? (
+                <div className="loading-state">
+                  <ClipLoader size={20} color={theme.colors.primary} />
+                  <span style={{ color: theme.colors.textSecondary }}>Loading questions...</span>
+                </div>
+              ) : analyticsData.topQuestions.length > 0 ? (
                 <ul className="questions-list">
                   {analyticsData.topQuestions.map((question, index) => (
-                    <li key={index}>{question}</li>
+                    <li key={question.ChunkId || index}>
+                      {question.AIGeneratedQuestion || question}
+                    </li>
                   ))}
                 </ul>
               ) : (

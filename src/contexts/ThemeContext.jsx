@@ -35,29 +35,29 @@ export const ThemeProvider = ({ children }) => {
 
   const theme = {
     colors: isDarkMode ? {
-      // Facebook Dark Theme
-      background: '#18191A',
-      surface: '#242526', 
-      primary: '#1877F2',
-      secondary: '#42B883',
-      onPrimary: '#FFFFFF',
-      textPrimary: '#E4E6EA',
-      textSecondary: '#B0B3B8',
-      border: '#3A3B3C',
-      accent: '#E7F3FF',
-      hover: '#303031'
+      // Apple Dark Theme
+      background: '#1d1d1f',
+      surface: '#2c2c2e', 
+      primary: '#0066cc',
+      secondary: '#0066cc',
+      onPrimary: '#ffffff',
+      textPrimary: '#ffffff',
+      textSecondary: '#a1a1a6',
+      border: '#38383a',
+      accent: '#e6f3ff',
+      hover: '#38383a'
     } : {
-      // Facebook Light Theme  
-      background: '#FFFFFF',
-      surface: '#F0F2F5',
-      primary: '#1877F2',
-      secondary: '#42B883',
-      onPrimary: '#FFFFFF',
-      textPrimary: '#1C1E21',
-      textSecondary: '#65676B',
-      border: '#DADDE1',
-      accent: '#E7F3FF',
-      hover: '#F2F3F5'
+      // Apple Light Theme  
+      background: '#ffffff',
+      surface: '#f5f5f7',
+      primary: '#0066cc',
+      secondary: '#0066cc',
+      onPrimary: '#ffffff',
+      textPrimary: '#1d1d1f',
+      textSecondary: '#6e6e73',
+      border: '#d2d2d7',
+      accent: '#e6f3ff',
+      hover: '#f5f5f7'
     }
   };
 
