@@ -191,85 +191,230 @@ const Settings = () => {
             </div>
 
             <div className="settings-content">
-                <div className="settings-grid">
-                    {/* Branding Section */}
-                    <div className="settings-section">
-                        <h2>
+                {/* Branding Section - Full Width */}
+                <div className="settings-section-full">
+                    <div className="section-header">
+                        <div className="section-title">
                             <FiUser className="section-icon" />
-                            Branding
-                        </h2>
-                        
-                        <div className="form-group">
-                            <label>Clinic name</label>
-                            <input
-                                type="text"
-                                value={clinicName}
-                                onChange={(e) => setClinicName(e.target.value)}
-                                className="form-input"
-                                placeholder="Enter clinic name"
-                            />
+                            <h2>Branding</h2>
                         </div>
-
-                        <div className="form-group">
-                            <label>Brand color</label>
-                            <div className="color-input-wrapper">
+                        <p className="section-description">
+                            Customize your brand appearance and messaging
+                        </p>
+                    </div>
+                    
+                    <div className="branding-grid">
+                        <div className="branding-row">
+                            <div className="form-group">
+                                <label>Clinic Name</label>
                                 <input
-                                    type="color"
-                                    value={brandColor}
-                                    onChange={(e) => setBrandColor(e.target.value)}
-                                    className="color-input"
+                                    type="text"
+                                    value={clinicName}
+                                    onChange={(e) => setClinicName(e.target.value)}
+                                    className="form-input"
+                                    placeholder="Enter clinic name"
                                 />
-                                <div className="color-preview" style={{ backgroundColor: brandColor }}></div>
                             </div>
-                        </div>
 
-                        <div className="form-group">
-                            <label>Text color</label>
-                            <div className="color-input-wrapper">
-                                <input
-                                    type="color"
-                                    value={textColor}
-                                    onChange={(e) => setTextColor(e.target.value)}
-                                    className="color-input"
-                                />
-                                <div className="color-preview" style={{ backgroundColor: textColor }}></div>
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Logo Upload</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleLogoUpload}
-                                className="form-input"
-                            />
-                            {logoUrl && (
-                                <div className="logo-preview">
-                                    <img src={logoUrl} alt="Logo preview" style={{ maxWidth: '200px', maxHeight: '100px', objectFit: 'contain' }} />
+                            <div className="form-group">
+                                <label>Brand Color</label>
+                                <div className="color-input-wrapper">
+                                    <input
+                                        type="color"
+                                        value={brandColor}
+                                        onChange={(e) => setBrandColor(e.target.value)}
+                                        className="color-input"
+                                    />
+                                    <div className="color-preview" style={{ backgroundColor: brandColor }}></div>
+                                    <span className="color-value">{brandColor}</span>
                                 </div>
-                            )}
+                            </div>
+
+                            <div className="form-group">
+                                <label>Text Color</label>
+                                <div className="color-input-wrapper">
+                                    <input
+                                        type="color"
+                                        value={textColor}
+                                        onChange={(e) => setTextColor(e.target.value)}
+                                        className="color-input"
+                                    />
+                                    <div className="color-preview" style={{ backgroundColor: textColor }}></div>
+                                    <span className="color-value">{textColor}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Intro Message</label>
-                            <textarea
-                                value={introMessage}
-                                onChange={(e) => setIntroMessage(e.target.value)}
-                                className="form-textarea"
-                                placeholder="Enter introduction message for your chat widget"
-                                rows="3"
-                            />
+                        <div className="branding-row">
+                            <div className="form-group logo-group">
+                                <label>Logo Upload</label>
+                                <div className="logo-upload-area">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleLogoUpload}
+                                        className="form-input file-input"
+                                        id="logo-upload"
+                                    />
+                                    <label htmlFor="logo-upload" className="logo-upload-label">
+                                        {logoUrl ? (
+                                            <div className="logo-preview">
+                                                <img src={logoUrl} alt="Logo preview" />
+                                                <span>Click to change logo</span>
+                                            </div>
+                                        ) : (
+                                            <div className="logo-placeholder">
+                                                <FiUser size={32} />
+                                                <span>Upload Logo</span>
+                                            </div>
+                                        )}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="form-group intro-group">
+                                <label>Introduction Message</label>
+                                <textarea
+                                    value={introMessage}
+                                    onChange={(e) => setIntroMessage(e.target.value)}
+                                    className="form-textarea"
+                                    placeholder="Enter introduction message for your chat widget"
+                                    rows="4"
+                                />
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Privacy & Team Section */}
-                    <div className="settings-section">
-                        <h2>
+                {/* CTA Buttons Section */}
+                <div className="settings-section-full">
+                    <div className="section-header">
+                        <div className="section-title">
+                            <FiExternalLink className="section-icon" />
+                            <h2>CTA Buttons</h2>
+                        </div>
+                        <p className="section-description">
+                            Configure call-to-action buttons and email options
+                        </p>
+                    </div>
+                    
+                    <div className="cta-grid">
+                        <div className="cta-section">
+                            <h3>Primary CTA Button</h3>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>CTA One URL</label>
+                                    <input
+                                        type="url"
+                                        value={bookNowUrl}
+                                        onChange={(e) => setBookNowUrl(e.target.value)}
+                                        className="form-input"
+                                        placeholder="https://example.com/booking"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>CTA One Label</label>
+                                    <input
+                                        type="text"
+                                        value={bookNowLabel}
+                                        onChange={(e) => setBookNowLabel(e.target.value)}
+                                        className="form-input"
+                                        placeholder="Book Now"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>CTA One Visible</label>
+                                    <select
+                                        value={bookNowShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                        onChange={(e) => setBookNowShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                        className="form-select"
+                                    >
+                                        <option value="visible">Visible</option>
+                                        <option value="hidden">Hidden</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="cta-section">
+                            <h3>Secondary CTA Button</h3>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>CTA Two URL</label>
+                                    <input
+                                        type="url"
+                                        value={ctaTwoUrl}
+                                        onChange={(e) => setCtaTwoUrl(e.target.value)}
+                                        className="form-input"
+                                        placeholder="https://example.com/action"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>CTA Two Label</label>
+                                    <input
+                                        type="text"
+                                        value={ctaTwoLabel}
+                                        onChange={(e) => setCtaTwoLabel(e.target.value)}
+                                        className="form-input"
+                                        placeholder="Custom Action"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>CTA Two Visible</label>
+                                    <select
+                                        value={ctaTwoShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                        onChange={(e) => setCtaTwoShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                        className="form-select"
+                                    >
+                                        <option value="visible">Visible</option>
+                                        <option value="hidden">Hidden</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="cta-section">
+                            <h3>Email Action</h3>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Send Email Label</label>
+                                    <input
+                                        type="text"
+                                        value={sendAnEmailLabel}
+                                        onChange={(e) => setSendAnEmailLabel(e.target.value)}
+                                        className="form-input"
+                                        placeholder="Send an email"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Send Email Visible</label>
+                                    <select
+                                        value={sendAnEmailShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
+                                        onChange={(e) => setSendAnEmailShow(e.target.value === 'visible' ? 'True' : 'False')}
+                                        className="form-select"
+                                    >
+                                        <option value="visible">Visible</option>
+                                        <option value="hidden">Hidden</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Privacy Section */}
+                <div className="settings-section-full">
+                    <div className="section-header">
+                        <div className="section-title">
                             <FiShield className="section-icon" />
-                            Privacy & Team
-                        </h2>
-
+                            <h2>Privacy & Data Management</h2>
+                        </div>
+                        <p className="section-description">
+                            Configure privacy settings, data retention, and team notifications
+                        </p>
+                    </div>
+                    
+                    <div className="privacy-grid">
                         <div className="form-group">
                             <label>Privacy Notice URL</label>
                             <input
@@ -279,10 +424,11 @@ const Settings = () => {
                                 className="form-input"
                                 placeholder="https://example.com/privacy"
                             />
+                            <small className="field-hint">Link to your privacy policy for users to review</small>
                         </div>
 
                         <div className="form-group">
-                            <label>Retention (days)</label>
+                            <label>Data Retention Period</label>
                             <select
                                 value={retention}
                                 onChange={(e) => setRetention(e.target.value)}
@@ -294,10 +440,11 @@ const Settings = () => {
                                 <option value="180">180 days</option>
                                 <option value="365">1 year</option>
                             </select>
+                            <small className="field-hint">How long to keep conversation data</small>
                         </div>
 
                         <div className="form-group">
-                            <label>Handoff emails</label>
+                            <label>Handoff Email Address</label>
                             <input
                                 type="email"
                                 value={handoffEmails}
@@ -305,105 +452,7 @@ const Settings = () => {
                                 className="form-input"
                                 placeholder="frontdesk@example.com"
                             />
-                        </div>
-                    </div>
-
-                    {/* CTA Buttons Section */}
-                    <div className="settings-section">
-                        <h2>
-                            <FiExternalLink className="section-icon" />
-                            CTA Buttons
-                        </h2>
-
-                        <div className="form-group">
-                            <label>CTA One URL</label>
-                            <input
-                                type="url"
-                                value={bookNowUrl}
-                                onChange={(e) => setBookNowUrl(e.target.value)}
-                                className="form-input"
-                                placeholder="https://example.com/booking"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>CTA One Label</label>
-                            <input
-                                type="text"
-                                value={bookNowLabel}
-                                onChange={(e) => setBookNowLabel(e.target.value)}
-                                className="form-input"
-                                placeholder="Book Now"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>CTA One Visible</label>
-                            <select
-                                value={bookNowShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
-                                onChange={(e) => setBookNowShow(e.target.value === 'visible' ? 'True' : 'False')}
-                                className="form-select"
-                            >
-                                <option value="visible">Visible</option>
-                                <option value="hidden">Hidden</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>CTA Two URL</label>
-                            <input
-                                type="url"
-                                value={ctaTwoUrl}
-                                onChange={(e) => setCtaTwoUrl(e.target.value)}
-                                className="form-input"
-                                placeholder="https://example.com/action"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>CTA Two Label</label>
-                            <input
-                                type="text"
-                                value={ctaTwoLabel}
-                                onChange={(e) => setCtaTwoLabel(e.target.value)}
-                                className="form-input"
-                                placeholder="Custom Action"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>CTA Two Visible</label>
-                            <select
-                                value={ctaTwoShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
-                                onChange={(e) => setCtaTwoShow(e.target.value === 'visible' ? 'True' : 'False')}
-                                className="form-select"
-                            >
-                                <option value="visible">Visible</option>
-                                <option value="hidden">Hidden</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Send Email Label</label>
-                            <input
-                                type="text"
-                                value={sendAnEmailLabel}
-                                onChange={(e) => setSendAnEmailLabel(e.target.value)}
-                                className="form-input"
-                                placeholder="Send an email"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Send Email Visible</label>
-                            <select
-                                value={sendAnEmailShow?.toLowerCase() === 'true' ? 'visible' : 'hidden'}
-                                onChange={(e) => setSendAnEmailShow(e.target.value === 'visible' ? 'True' : 'False')}
-                                className="form-select"
-                            >
-                                <option value="visible">Visible</option>
-                                <option value="hidden">Hidden</option>
-                            </select>
+                            <small className="field-hint">Email address to receive handoff notifications</small>
                         </div>
                     </div>
                 </div>
