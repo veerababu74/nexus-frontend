@@ -6,7 +6,7 @@ const ChatHeader = ({ chatType, sessionStats, onClearChat, showClearButton }) =>
         if (chatType === 'improved') {
             return {
                 title: '🚀 Advanced AI Assistant',
-                subtitle: 'Enhanced with Intelligence Analytics & Context Awareness'
+                subtitle: '' // Removed subtitle
             };
         } else {
             return {
@@ -24,25 +24,11 @@ const ChatHeader = ({ chatType, sessionStats, onClearChat, showClearButton }) =>
             <div className="chat-header-info">
                 <div className="header-content">
                     <h1>{chatInfo.title}</h1>
-                    <p>{chatInfo.subtitle}</p>
+                    {chatInfo.subtitle && <p>{chatInfo.subtitle}</p>}
                 </div>
 
-                {/* Session Stats */}
+                {/* Session Stats - Only show clear button if available */}
                 <div className="session-stats">
-                    <div className="stat-badge">
-                        📊 {sessionStats.messagesCount} msgs
-                    </div>
-                    {/* Only show session ID and index for advanced chat */}
-                    {chatType === 'improved' && (
-                        <>
-                            <div className="stat-badge">
-                                🆔 {sessionStats.session}
-                            </div>
-                            <div className="stat-badge">
-                                📚 {sessionStats.index}
-                            </div>
-                        </>
-                    )}
                     {showClearButton && (
                         <button className="clear-chat-btn" onClick={onClearChat}>
                             🗑️ Clear

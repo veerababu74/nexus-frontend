@@ -397,6 +397,17 @@ const Settings = () => {
                                         <option value="hidden">Hidden</option>
                                     </select>
                                 </div>
+                                <div className="form-group">
+                                    <label>Handoff Email Address</label>
+                                    <input
+                                        type="email"
+                                        value={handoffEmails}
+                                        onChange={(e) => setHandoffEmails(e.target.value)}
+                                        className="form-input"
+                                        placeholder="frontdesk@example.com"
+                                    />
+                                    <small className="field-hint">Email address to receive handoff notifications</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -441,18 +452,6 @@ const Settings = () => {
                                 <option value="365">1 year</option>
                             </select>
                             <small className="field-hint">How long to keep conversation data</small>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Handoff Email Address</label>
-                            <input
-                                type="email"
-                                value={handoffEmails}
-                                onChange={(e) => setHandoffEmails(e.target.value)}
-                                className="form-input"
-                                placeholder="frontdesk@example.com"
-                            />
-                            <small className="field-hint">Email address to receive handoff notifications</small>
                         </div>
                     </div>
                 </div>

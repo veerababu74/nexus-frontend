@@ -93,8 +93,7 @@ const Home = () => {
     selfServePercentage: `${dashboardData.SelfServe}%`,
     leads: dashboardData.LeedsCount,
     incidents: dashboardData.Incidents,
-    topQuestions: topQuestions,
-    busyHours: '— wireframe —'
+    topQuestions: topQuestions
   };
 
   const fetchConversationsData = async () => {
@@ -751,16 +750,7 @@ const Home = () => {
             }
             className="info-questions"
           />
-          <InfoCard
-            title="Busy hours"
-            content={
-              <div className="busy-hours">
-                <FiClock size={24} />
-                <span>{analyticsData.busyHours}</span>
-              </div>
-            }
-            className="info-busy-hours"
-          />
+          {/* Busy hours section is hidden */}
         </div>
       </div>
 

@@ -329,7 +329,7 @@ const ToneSafety = () => {
                             <div className="slider-container">
                                 <div className="slider-header">
                                     <label>Formality</label>
-                                    <span className="slider-value">{formality}%</span>
+                                    <span className="slider-value">{formality}</span>
                                 </div>
                                 <div className="slider-wrapper">
                                     <input
@@ -352,7 +352,7 @@ const ToneSafety = () => {
                             <div className="slider-container">
                                 <div className="slider-header">
                                     <label>Empathy</label>
-                                    <span className="slider-value">{empathy }%</span>
+                                    <span className="slider-value">{empathy}</span>
                                 </div>
                                 <div className="slider-wrapper">
                                     <input
@@ -375,7 +375,7 @@ const ToneSafety = () => {
                             <div className="slider-container">
                                 <div className="slider-header">
                                     <label>Brevity</label>
-                                    <span className="slider-value">{brevity}%</span>
+                                    <span className="slider-value">{brevity}</span>
                                 </div>
                                 <div className="slider-wrapper">
                                     <input
@@ -398,7 +398,7 @@ const ToneSafety = () => {
                             <div className="slider-container">
                                 <div className="slider-header">
                                     <label>Optimism</label>
-                                    <span className="slider-value">{optimism}%</span>
+                                    <span className="slider-value">{optimism}</span>
                                 </div>
                                 <div className="slider-wrapper">
                                     <input
