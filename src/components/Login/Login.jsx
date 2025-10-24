@@ -65,7 +65,7 @@ const Login = () => {
                 />
               </svg>
             </div>
-            <h1 className="login-title">Welcome to Nexus</h1>
+            <h1 className="login-title">Welcome to NeuraScaleX</h1>
             <p className="login-subtitle">
               Sign in with your Microsoft account to continue
             </p>
@@ -119,31 +119,37 @@ const Login = () => {
             </button>
 
             <div className="login-features">
-              <h3>What you'll get with Nexus:</h3>
+              <h3>What you'll get with NeuraScaleX:</h3>
               <div className="feature-list">
                 <div className="feature-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span>Advanced AI Chat Capabilities</span>
+                  <span>AI Front Door Dashboard</span>
                 </div>
                 <div className="feature-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span>Knowledge Management System</span>
+                  <span>Knowledge & Safety Console</span>
                 </div>
                 <div className="feature-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span>Analytics & Insights Dashboard</span>
+                  <span>Lead & Conversation Analytics</span>
                 </div>
                 <div className="feature-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span>Secure & Enterprise-Grade</span>
+                  <span>Publishing & Brand Settings</span>
+                </div>
+                <div className="feature-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>Secure Microsoft Azure Access</span>
                 </div>
               </div>
             </div>
@@ -151,7 +157,7 @@ const Login = () => {
 
           <div className="login-footer">
             <p className="login-footer-text">
-              Powered by Microsoft Azure AD for secure authentication
+              Powered by Microsoft Azure AD for enterprise-grade security
             </p>
           </div>
         </div>
