@@ -95,6 +95,7 @@ welcome: "${welcomeText}"
               Widget & Embed
             </h2>
             
+            {/* Welcome text - Hidden
             <div className="form-group">
               <label 
                 className="form-label"
@@ -142,6 +143,7 @@ welcome: "${welcomeText}"
                 />
               </div>
             </div>
+            */}
 
             <div className="form-group">
               <label 
@@ -173,7 +175,7 @@ welcome: "${welcomeText}"
             </div>
           </div>
 
-          {/* Go-Live Controls Section */}
+          {/* Go-Live Controls Section - Hidden
           <div 
             className="publishing-card controls-card"
             style={{ 
@@ -242,6 +244,7 @@ welcome: "${welcomeText}"
               </div>
             </div>
           </div>
+          */}
         </div>
       </div>
     </div>

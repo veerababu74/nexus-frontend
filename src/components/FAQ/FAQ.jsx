@@ -50,9 +50,6 @@ const FAQ = () => {
             console.log('FAQ API response:', response);
             console.log('FAQ data array:', response.data);
             setFaqs(response.data || []);
-            if (message.type === '') {
-                setMessage({ type: 'success', text: `FAQs loaded successfully! Found ${response.data?.length || 0} FAQs.` });
-            }
         } catch (error) {
             console.error('Error loading FAQs:', error);
             setMessage({ type: 'error', text: 'Failed to load FAQs. Please try again.' });

@@ -413,7 +413,7 @@ const Settings = () => {
                     </div>
                 </div>
 
-                {/* Privacy Section */}
+                {/* Privacy Section - Hidden
                 <div className="settings-section-full">
                     <div className="section-header">
                         <div className="section-title">
@@ -455,6 +455,7 @@ const Settings = () => {
                         </div>
                     </div>
                 </div>
+                */}
 
                 {/* Success Message */}
                 {successMessage && (

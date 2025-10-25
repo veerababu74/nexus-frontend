@@ -184,7 +184,7 @@ const LeadsLogs = () => {
           className="leads-logs-title"
           style={{ color: theme.colors.textPrimary }}
         >
-          Leads & Logs
+          Leads & Conversations - Comming Soon!
         </h1>
       </div>
 
@@ -206,7 +206,7 @@ const LeadsLogs = () => {
                   style={{ color: theme.colors.textPrimary }}
                 >
                   <FiUsers size={20} />
-                  Leads
+                  Conversations
                 </h2>
                 <AddLeadButton />
               </div>

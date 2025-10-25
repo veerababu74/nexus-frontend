@@ -4,7 +4,6 @@ import {
   FiMessageCircle, 
   FiPercent, 
   FiUsers, 
-  FiAlertTriangle, 
   FiHelpCircle, 
   FiClock,
   FiX,
@@ -92,7 +91,6 @@ const Home = () => {
     conversations: dashboardData.ConversationCount,
     selfServePercentage: `${dashboardData.SelfServe}%`,
     leads: dashboardData.LeedsCount,
-    incidents: dashboardData.Incidents,
     topQuestions: topQuestions
   };
 
@@ -715,12 +713,6 @@ const Home = () => {
             className="stat-leads"
             onClick={handleLeadsClick}
           />
-          <StatCard
-            icon={FiAlertTriangle}
-            title="Incidents"
-            value={analyticsData.incidents}
-            className="stat-incidents"
-          />
         </div>
 
         {/* Bottom Row Info Cards */}
@@ -744,7 +736,7 @@ const Home = () => {
               ) : (
                 <div className="no-data">
                   <FiHelpCircle size={24} />
-                  <span>No data</span>
+                  <span>Top Questions - Coming Soon</span>
                 </div>
               )
             }
