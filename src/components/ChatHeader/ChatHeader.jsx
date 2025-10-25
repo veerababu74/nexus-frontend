@@ -5,7 +5,7 @@ const ChatHeader = ({ chatType, sessionStats, onClearChat, showClearButton }) =>
     const getChatInfo = () => {
         if (chatType === 'improved') {
             return {
-                title: '🚀 Advanced AI Assistant',
+                title: 'Sandbox',
                 subtitle: '' // Removed subtitle
             };
         } else {

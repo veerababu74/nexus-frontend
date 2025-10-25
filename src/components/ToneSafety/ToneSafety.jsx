@@ -17,11 +17,11 @@ import './ToneSafety.css';
 
 const ToneSafety = () => {
     const { theme } = useTheme();
-    const [formality, setFormality] = useState(4);
-    const [empathy, setEmpathy] = useState(3);
-    const [brevity, setBrevity] = useState(5);
-    const [optimism, setOptimism] = useState(9);
-    const [preset, setPreset] = useState('Default');
+    const [formality, setFormality] = useState(6);
+    const [empathy, setEmpathy] = useState(9);
+    const [brevity, setBrevity] = useState(6);
+    const [optimism, setOptimism] = useState(7);
+    const [preset, setPreset] = useState('Solo-Clinician (Default)');
     const [newBannedPhrase, setNewBannedPhrase] = useState('');
     const [newSoftRedFlag, setNewSoftRedFlag] = useState('');
 
@@ -103,22 +103,18 @@ const ToneSafety = () => {
     };
 
     const presetOptions = [
-        'Default',
-        'Program Explainer',
-        'Educational Assistant',
-        'Support Specialist',
-        'Information Guide',
-        'General Helper'
+        'Solo-Clinician (Default)',
+        'Clinic-Professional',
+        'Coach-Guidance',
+        'Educator-Creator'
     ];
 
     // Define preset values
     const presetValues = {
-        'Default': { formality: 4, empathy: 3, brevity: 5, optimism: 9 },
-        'Program Explainer': { formality: 5, empathy: 7, brevity: 3, optimism: 8 },
-        'Educational Assistant': { formality: 6, empathy: 8, brevity: 4, optimism: 7 },
-        'Support Specialist': { formality: 4, empathy: 9, brevity: 5, optimism: 8 },
-        'Information Guide': { formality: 7, empathy: 6, brevity: 6, optimism: 7 },
-        'General Helper': { formality: 5, empathy: 7, brevity: 4, optimism: 8 }
+        'Solo-Clinician (Default)': { formality: 6, empathy: 9, brevity: 6, optimism: 7 },
+        'Clinic-Professional': { formality: 7, empathy: 7, brevity: 6, optimism: 6 },
+        'Coach-Guidance': { formality: 5, empathy: 8, brevity: 7, optimism: 8 },
+        'Educator-Creator': { formality: 4, empathy: 7, brevity: 8, optimism: 9 }
     };
 
     const addBannedPhrase = async () => {
@@ -253,27 +249,27 @@ const ToneSafety = () => {
     const handleReset = async () => {
         if (window.confirm('Are you sure you want to reset all configurations? This will reload data from the server.')) {
             // Reset persona values to defaults
-            setFormality(4);
-            setEmpathy(3);
-            setBrevity(5);
-            setOptimism(9);
-            setPreset('Default');
+            setFormality(6);
+            setEmpathy(9);
+            setBrevity(6);
+            setOptimism(7);
+            setPreset('Solo-Clinician (Default)');
             
             // Reload all data from API
             await loadAllData();
             
             // Update local slider values based on loaded persona settings
             if (personaSettings.FormalityPersonaId) {
-                setFormality(parseInt(personaSettings.FormalityPersonaId) || 4);
+                setFormality(parseInt(personaSettings.FormalityPersonaId) || 6);
             }
             if (personaSettings.EmpathyPersonaId) {
-                setEmpathy(parseInt(personaSettings.EmpathyPersonaId) || 3);
+                setEmpathy(parseInt(personaSettings.EmpathyPersonaId) || 9);
             }
             if (personaSettings.BrevityPersonaId) {
-                setBrevity(parseInt(personaSettings.BrevityPersonaId) || 5);
+                setBrevity(parseInt(personaSettings.BrevityPersonaId) || 6);
             }
             if (personaSettings.OptimismPersonaId) {
-                setOptimism(parseInt(personaSettings.OptimismPersonaId) || 9);
+                setOptimism(parseInt(personaSettings.OptimismPersonaId) || 7);
             }
             
             alert('Configuration reset and reloaded from server!');

@@ -3,6 +3,7 @@ import './Chat.css'; // Use the same CSS as regular chat
 import './ImprovedChat.css'; // Additional enhanced styles
 import ChatHeader from '../ChatHeader/ChatHeader';
 import { fetchImprovedChatResponse, clearImprovedChatSession, saveReaction } from '../../api/improvedChatAPI';
+import { getStarterQuestions } from '../../api/starterQuestionsAPI';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const ImprovedChat = () => {
@@ -17,6 +18,11 @@ const ImprovedChat = () => {
         index: 'test'
     });
     const [messageReactions, setMessageReactions] = useState({});
+    const [starterQuestions, setStarterQuestions] = useState({
+        q1: '',
+        q2: '',
+        q3: ''
+    });
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -30,6 +36,21 @@ const ImprovedChat = () => {
 
     useEffect(() => {
         inputRef.current?.focus();
+        // Fetch starter questions when component mounts
+        const fetchStarterQuestions = async () => {
+            try {
+                const questions = await getStarterQuestions();
+                setStarterQuestions({
+                    q1: questions.q1 || '',
+                    q2: questions.q2 || '',
+                    q3: questions.q3 || ''
+                });
+            } catch (error) {
+                console.error('Error fetching starter questions:', error);
+            }
+        };
+        
+        fetchStarterQuestions();
     }, []);
 
     const handleSend = async () => {
@@ -191,28 +212,33 @@ const ImprovedChat = () => {
             <div className="chat-messages">
                 {chatLog.length === 0 && !loading && (
                     <div className="welcome-screen">
-                        <div className="welcome-icon">🚀</div>
-                        <h2>Advanced AI Chat</h2>
-                        <p>Experience the next generation of AI conversation with enhanced intelligence, context awareness, and detailed analytics!</p>
+                        <h2>Test Your AI Assistant</h2>
+                        <p>Choose your topic</p>
                         <div className="example-prompts">
-                            <div
-                                className="prompt-card"
-                                onClick={() => handlePromptClick("What makes you different from other AI assistants?")}
-                            >
-                                "What makes you different from other AI assistants?"
-                            </div>
-                            <div
-                                className="prompt-card"
-                                onClick={() => handlePromptClick("Help me understand complex topics with context")}
-                            >
-                                "Help me understand complex topics with context"
-                            </div>
-                            <div
-                                className="prompt-card"
-                                onClick={() => handlePromptClick("Show me your advanced capabilities")}
-                            >
-                                "Show me your advanced capabilities"
-                            </div>
+                            {starterQuestions.q1 && (
+                                <div
+                                    className="prompt-card"
+                                    onClick={() => handlePromptClick(starterQuestions.q1)}
+                                >
+                                    {starterQuestions.q1}
+                                </div>
+                            )}
+                            {starterQuestions.q2 && (
+                                <div
+                                    className="prompt-card"
+                                    onClick={() => handlePromptClick(starterQuestions.q2)}
+                                >
+                                    {starterQuestions.q2}
+                                </div>
+                            )}
+                            {starterQuestions.q3 && (
+                                <div
+                                    className="prompt-card"
+                                    onClick={() => handlePromptClick(starterQuestions.q3)}
+                                >
+                                    {starterQuestions.q3}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -297,7 +323,7 @@ const ImprovedChat = () => {
                         disabled={loading || !userInput.trim()}
                         className="send-button"
                     >
-                        {loading ? '⏳' : '🚀'}
+                        {loading ? '⏳' : '➤'}
                     </button>
                 </div>
             </div>
