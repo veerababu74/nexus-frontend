@@ -717,6 +717,7 @@ const Home = () => {
 
         {/* Bottom Row Info Cards */}
         <div className="info-grid">
+          {/* Top Questions section - Hidden
           <InfoCard
             title="Top questions"
             content={
@@ -742,6 +743,7 @@ const Home = () => {
             }
             className="info-questions"
           />
+          */}
           {/* Busy hours section is hidden */}
         </div>
       </div>
