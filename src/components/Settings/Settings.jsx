@@ -273,7 +273,7 @@ const Settings = () => {
                             </div>
 
                             <div className="form-group intro-group">
-                                <label>Introduction Welcome Message</label>
+                                <label>Introduction - Welcome Message</label>
                                 <textarea
                                     value={introMessage}
                                     onChange={(e) => setIntroMessage(e.target.value)}
